@@ -20,7 +20,16 @@ That version includes CHOW_DT and CHOW_CNT per facility. Use it for ownership hi
 This 182-col version is preferred for the current-state reference layer.
 """
 
-import urllib.request, json, csv, time, pathlib
+import urllib.request, json, time, pathlib, sys
+
+try:
+    import pandas as pd
+except ImportError:
+    sys.exit("pandas required")
+try:
+    import pyarrow  # noqa: F401
+except ImportError:
+    sys.exit("pyarrow required: pip install pyarrow")
 
 BASE_URL = (
     "https://data.cms.gov/data-api/v1/dataset"
@@ -33,7 +42,7 @@ HI_MIN = 100
 HI_MAX = 500
 
 OUTPUT_DIR = pathlib.Path(__file__).parent / "output_reference"
-OUTPUT_FILE = OUTPUT_DIR / "pos_iqies_national.csv"
+OUTPUT_FILE = OUTPUT_DIR / "pos_iqies_national.parquet"
 
 
 def fetch_page(offset: int) -> list[dict]:
@@ -120,15 +129,12 @@ if hi_rows:
 
 # Write output -- all 182 columns, all provider types
 OUTPUT_DIR.mkdir(exist_ok=True)
-fieldnames = list(rows[0].keys()) if rows else []
-with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(rows)
+df = pd.DataFrame(rows)
+df.to_parquet(OUTPUT_FILE, index=False, engine="pyarrow")
 
 print(f"Output: {OUTPUT_FILE}")
 print(f"Rows:   {total:,}")
-print(f"Cols:   {len(fieldnames)}")
+print(f"Cols:   {len(df.columns)}")
 print()
 print("Usage:")
 print("  Join key:      prvdr_num (CCN)")

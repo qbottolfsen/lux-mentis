@@ -46,13 +46,17 @@ try:
     import pandas as pd
 except ImportError:
     sys.exit("pandas required")
+try:
+    import pyarrow  # noqa: F401
+except ImportError:
+    sys.exit("pyarrow required: pip install pyarrow")
 
 SCRIPT_DIR = pathlib.Path(__file__).parent
 OUTPUT_DIR = SCRIPT_DIR / "output_reference"
 CACHE_DIR  = OUTPUT_DIR / "cache"
 
-OUTPUT_HEALTH = OUTPUT_DIR / "nh_health_deficiencies_national.csv"
-OUTPUT_FIRE   = OUTPUT_DIR / "nh_fire_deficiencies_national.csv"
+OUTPUT_HEALTH = OUTPUT_DIR / "nh_health_deficiencies_national.parquet"
+OUTPUT_FIRE   = OUTPUT_DIR / "nh_fire_deficiencies_national.parquet"
 FTAG_FILE     = OUTPUT_DIR / "reference_ftag_citations.csv"
 
 CACHE_HEALTH       = CACHE_DIR / "nh_health_deficiencies_raw.csv.gz"
@@ -381,8 +385,8 @@ else:
 # ── Write ──────────────────────────────────────────────────────────────────────
 
 OUTPUT_DIR.mkdir(exist_ok=True)
-df_health.to_csv(OUTPUT_HEALTH, index=False)
-df_fire.to_csv(OUTPUT_FIRE, index=False)
+df_health.to_parquet(OUTPUT_HEALTH, index=False, engine="pyarrow")
+df_fire.to_parquet(OUTPUT_FIRE, index=False, engine="pyarrow")
 
 print()
 print(f"Health deficiencies: {OUTPUT_HEALTH}")

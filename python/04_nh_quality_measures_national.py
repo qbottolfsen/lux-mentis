@@ -33,14 +33,18 @@ try:
     import pandas as pd
 except ImportError:
     sys.exit("pandas required")
+try:
+    import pyarrow  # noqa: F401
+except ImportError:
+    sys.exit("pyarrow required: pip install pyarrow")
 
 SCRIPT_DIR = pathlib.Path(__file__).parent
 OUTPUT_DIR = SCRIPT_DIR / "output_reference"
 CACHE_DIR  = OUTPUT_DIR / "cache"
 
-OUTPUT_MDS    = OUTPUT_DIR / "nh_mds_qm_national.csv"
-OUTPUT_CLAIMS = OUTPUT_DIR / "nh_claims_qm_national.csv"
-OUTPUT_QRP    = OUTPUT_DIR / "nh_qrp_national.csv"
+OUTPUT_MDS    = OUTPUT_DIR / "nh_mds_qm_national.parquet"
+OUTPUT_CLAIMS = OUTPUT_DIR / "nh_claims_qm_national.parquet"
+OUTPUT_QRP    = OUTPUT_DIR / "nh_qrp_national.parquet"
 
 MEASURE_INTERVALS_FILE = OUTPUT_DIR / "reference_measure_intervals.csv"
 
@@ -369,9 +373,9 @@ print(f"QRP -- HI unique CCNs reporting: {hi_qrp['ccn'].nunique()} "
 # ── Write ──────────────────────────────────────────────────────────────────────
 
 OUTPUT_DIR.mkdir(exist_ok=True)
-df_mds.to_csv(OUTPUT_MDS, index=False)
-df_claims.to_csv(OUTPUT_CLAIMS, index=False)
-df_qrp.to_csv(OUTPUT_QRP, index=False)
+df_mds.to_parquet(OUTPUT_MDS, index=False, engine="pyarrow")
+df_claims.to_parquet(OUTPUT_CLAIMS, index=False, engine="pyarrow")
+df_qrp.to_parquet(OUTPUT_QRP, index=False, engine="pyarrow")
 
 print()
 print(f"MDS QM:    {OUTPUT_MDS}  ({len(df_mds):,} rows, {len(df_mds.columns)} cols)")

@@ -37,7 +37,7 @@ D:\national_ltpac\
 
 **Phase 1 (SQL)** builds the access analysis: Census 65+ population by ZCTA against LTPAC provider counts from NPPES. Outputs are SQL Server tables used for the access and gap analysis and state rankings.
 
-**Phase 2 (Python)** builds the accountability layer: CMS quality measures, deficiency citations, penalties, VBP scores, cost report financials, staffing, and ownership data. All outputs are flat CSVs pulled from CMS APIs and written to `output_reference/`.
+**Phase 2 (Python)** builds the accountability layer: CMS quality measures, deficiency citations, penalties, VBP scores, cost report financials, staffing, and ownership data. Outputs are written to `output_reference/` as CSV or Parquet depending on file size (see Output Formats below).
 
 **Build order:** Complete the data layer before any analytical or screening work. Within Phase 2, Level 0 (foundation) runs before Level 2 (quality and financial). The full provider type landscape (SNF, HHA, Hospice, Dialysis) needs to be in place before cross-provider analysis.
 
@@ -85,7 +85,7 @@ All scripts run from `D:\national_ltpac\python\`. Run Level 0 scripts first; Lev
 | `00_snf_enrollments_national.py` | `snf_enrollments_national.csv` | 14,425 | All Medicare-certified SNFs with NPI + CCN crosswalk |
 | `00_snf_owners_national.py` | `snf_owners_national.csv` *(gitignored)* | 280,207 | Raw ownership records (individual names; gitignored) |
 | | `snf_owners_facility_flags.csv` | 14,425 | Per-facility PE/REIT/holding company flags (public) |
-| `00_pos_iqies_national.py` | `pos_iqies_national.csv` | 77,283 | All active provider types (182 cols) including NF, ALF, CCRC |
+| `00_pos_iqies_national.py` | `pos_iqies_national.parquet` | 77,283 | All active provider types (182 cols) including NF, ALF, CCRC |
 | `00_cms_enrollments_all_types.py` | `cms_enrollments_all_types.csv` | 57,767 | All Medicare-enrolled provider types with NPI |
 | `00_facility_master_national.py` | `facility_master_national.csv` | 57,767 | Facility spine with CCN + NPI + geography (60 cols) |
 | `00_census_demographics_national.py` | `census_demographics_national.csv` | 33,772 | ACS 5-year demographics by ZCTA |
@@ -100,13 +100,13 @@ All Level 2 scripts pull from the CMS Provider Data DKAN API. Run in any order a
 | Script | Output | Rows | Description |
 |--------|--------|------|-------------|
 | `01_nh_provider_info_national.py` | `nh_provider_info_national.csv` | 14,695 | Five-Star ratings, staffing HPRD, turnover, SFF flags |
-| `02_nh_deficiencies_national.py` | `nh_health_deficiencies_national.csv` | 418,479 | Citation-level health deficiencies with F-tag + scope/severity |
-| | `nh_fire_deficiencies_national.csv` | 200,030 | Citation-level fire safety deficiencies |
+| `02_nh_deficiencies_national.py` | `nh_health_deficiencies_national.parquet` | 418,479 | Citation-level health deficiencies with F-tag + scope/severity |
+| | `nh_fire_deficiencies_national.parquet` | 200,030 | Citation-level fire safety deficiencies |
 | `03_nh_penalties_national.py` | `nh_penalties_national.csv` | 15,181 | Individual penalty events (fines + payment denials) |
 | | `nh_penalties_by_facility.csv` | 6,405 | Per-CCN penalty aggregates |
-| `04_nh_quality_measures_national.py` | `nh_mds_qm_national.csv` | 249,815 | MDS-based quality measures (17 per facility) |
-| | `nh_claims_qm_national.csv` | 58,780 | Claims-based QMs (4 risk-adjusted measures) |
-| | `nh_qrp_national.csv` | 837,615 | SNF Quality Reporting Program measures (57 per facility) |
+| `04_nh_quality_measures_national.py` | `nh_mds_qm_national.parquet` | 249,815 | MDS-based quality measures (17 per facility) |
+| | `nh_claims_qm_national.parquet` | 58,780 | Claims-based QMs (4 risk-adjusted measures) |
+| | `nh_qrp_national.parquet` | 837,615 | SNF Quality Reporting Program measures (57 per facility) |
 | `05_snf_vbp_national.py` | `snf_vbp_national.csv` | 12,901 | VBP performance scores + IPM multiplier |
 | `06_pac_puf_national.py` | `pac_puf_national.csv` | 14,161 | PAC utilization, therapy intensity, diagnosis mix (71 cols) |
 | `07_snf_cost_report_national.py` | `snf_cost_report_national.csv` | 14,933 | HCRIS: payer mix, operating margin, occupancy (24 cols) |
@@ -143,6 +143,32 @@ No dependencies. Run at any time.
 The public-facing facility-level flags (`snf_owners_facility_flags.csv`, compliance outputs) contain no individual names and are committed to the repository.
 
 **LEIE match policy:** Name matches between CMS ownership records and the OIG LEIE are Level 1 (Observation) only. Individual match details are never a public product. They are held in access-controlled local logs and require confirmed identity (DOB + state + NPI cross-reference) before any finding is reported. Facility-level flags (CCN, exclusion type code, verification status) are public.
+
+---
+
+## Output Formats
+
+Most files in `output_reference/` are CSV. Six write to Parquet (`.parquet`, pyarrow backend):
+
+| File | Parquet size | CSV equivalent |
+|------|-------------|----------------|
+| `pos_iqies_national.parquet` | 6.7 MB | 166 MB |
+| `nh_health_deficiencies_national.parquet` | 3.2 MB | 150 MB |
+| `nh_fire_deficiencies_national.parquet` | 1.6 MB | 61 MB |
+| `nh_mds_qm_national.parquet` | 4.4 MB | 48 MB |
+| `nh_qrp_national.parquet` | 1.8 MB | 83 MB |
+| `nh_claims_qm_national.parquet` | 1.6 MB | 10 MB |
+
+The original CSVs for these six files ranged from 10 MB to 166 MB. Three were over GitHub's 100 MB per-file hard limit, and the others were close enough to matter. The options were to drop columns, gzip the CSVs, or switch to Parquet. Dropping columns was ruled out immediately. That kind of decision gets made upfront, before Phase 3 analysis runs, which is exactly when you can't know what a later script will need. The goal was to change the container without touching the data.
+
+Parquet with pyarrow keeps every row and every column. It reads back into pandas with `pd.read_parquet()` the same way CSV reads work everywhere else in the pipeline. The data types survive the round trip without being re-parsed from strings, so numeric fields come back as numbers instead of objects. The files are 6 to 50 times smaller than the CSV equivalents.
+
+The CSV versions of these six files are excluded in `.gitignore`. Anyone who has them locally from a run before this change can keep them; the scripts write Parquet going forward.
+
+```python
+# Read example -- same pattern as the CSV reads in every other script
+df = pd.read_parquet("output_reference/nh_health_deficiencies_national.parquet")
+```
 
 ---
 
@@ -254,7 +280,7 @@ All data is publicly available. No proprietary, claims, or HIPAA-covered data is
 **Prerequisites:**
 ```
 Python 3.13+
-pip install pandas requests
+pip install pandas requests pyarrow
 ```
 
 **Phase 1 (SQL):** Requires SQL Server 2025 with the `HEALTHCARE_DATA` database from the Hawaii project. NPI and NUCC tables (`dbo.NPIData`, `ref.NUCC_Taxonomy`) are already loaded nationally.
