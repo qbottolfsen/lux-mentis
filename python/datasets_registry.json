@@ -1,0 +1,757 @@
+{
+  "comment": "Registry of all datasets in the Lux Mentis pipeline. Used by health_check.py to run structural conformance checks. Do not edit provenance fields by hand \u00e2\u20ac\u201d they are updated by the scripts that produce each output.",
+  "datasets": [
+    {
+      "name": "snf_enrollments",
+      "label": "SNF Enrollments",
+      "script": "00_snf_enrollments_national.py",
+      "output_file": "snf_enrollments_national.csv",
+      "format": "csv",
+      "access_method": "data_api_v1",
+      "uuid": "5f2c306f-3b1c-42cd-b037-187b2ce22126",
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "PROVIDER TYPE CODE",
+          "check": "constant_value",
+          "reason": "SNF enrollment filter \u2014 all rows are PART A SNF (00-18). Constant by design."
+        },
+        {
+          "field": "PROVIDER TYPE TEXT",
+          "check": "constant_value",
+          "reason": "SNF enrollment filter \u2014 all rows are PART A PROVIDER - SKILLED NURSING FACILITY. Constant by design."
+        },
+        {
+          "field": "ADDRESS LINE 2",
+          "check": "null_rate",
+          "reason": "Address line 2 is sparse by design; most US addresses don't use it. 95.7% null is expected."
+        }
+      ]
+    },
+    {
+      "name": "snf_owners_flags",
+      "label": "SNF Owners \u00e2\u20ac\u201d Facility Flags (public)",
+      "script": "00_snf_owners_national.py",
+      "output_file": "snf_owners_facility_flags.csv",
+      "format": "csv",
+      "access_method": "data_api_v1",
+      "uuid": "afe44b85-cc6d-40d7-b5df-00ae8910d1d2",
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "has_pe_owner",
+        "has_reit_owner",
+        "has_holding_company",
+        "owner_count"
+      ],
+      "known_findings": []
+    },
+    {
+      "name": "snf_owners_raw",
+      "label": "SNF Owners \u00e2\u20ac\u201d Raw (gitignored, individual names)",
+      "script": "00_snf_owners_national.py",
+      "output_file": "snf_owners_national.csv",
+      "format": "csv",
+      "access_method": "data_api_v1",
+      "uuid": "afe44b85-cc6d-40d7-b5df-00ae8910d1d2",
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": true,
+      "fields_computed": [],
+      "known_findings": []
+    },
+    {
+      "name": "pos_iqies",
+      "label": "POS iQIES \u00e2\u20ac\u201d All Provider Types",
+      "script": "00_pos_iqies_national.py",
+      "output_file": "pos_iqies_national.parquet",
+      "format": "parquet",
+      "access_method": "data_api_v1",
+      "uuid": "086e48c4-87a6-4be1-8823-29e8da8f225b",
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "processing_date",
+          "check": "constant_value",
+          "reason": "CMS batch processing date \u2014 constant within a vintage pull. Not a data field."
+        }
+      ]
+    },
+    {
+      "name": "cms_enrollments_all_types",
+      "label": "CMS Enrollments \u00e2\u20ac\u201d All Medicare Provider Types",
+      "script": "00_cms_enrollments_all_types.py",
+      "output_file": "cms_enrollments_all_types.csv",
+      "format": "csv",
+      "access_method": "data_api_v1",
+      "uuid": "multiple (see script)",
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "provider_type_label"
+      ],
+      "known_findings": []
+    },
+    {
+      "name": "facility_master",
+      "label": "Facility Master \u00e2\u20ac\u201d Spine with Geography",
+      "script": "00_facility_master_national.py",
+      "output_file": "facility_master_national.csv",
+      "format": "csv",
+      "access_method": "computed",
+      "uuid": null,
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "all"
+      ],
+      "known_findings": [],
+      "note": "Derived from snf_enrollments + pos_iqies + cms_enrollments_all_types",
+      "known_anomalies": [
+        {
+          "field": "processing_date",
+          "check": "constant_value",
+          "reason": "CMS batch processing date \u2014 constant within a vintage pull."
+        },
+        {
+          "field": "acs_year",
+          "check": "constant_value",
+          "reason": "Census vintage label \u2014 constant across the ZCTA join (2024-5yr). Expected."
+        },
+        {
+          "field": "owner_count",
+          "check": "type_anomaly",
+          "reason": "LATENT \u2014 NOT suppressed. This field is only 25% numeric; investigate whether it contains boolean flags or counts. Keep in divergence output."
+        }
+      ]
+    },
+    {
+      "name": "leie",
+      "label": "OIG LEIE Exclusions (gitignored, individual names)",
+      "script": "00_leie_national.py",
+      "output_file": "leie_national.csv",
+      "format": "csv",
+      "access_method": "bulk_csv",
+      "uuid": null,
+      "dist_id": null,
+      "vintage": "Jul 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": true,
+      "fields_computed": [],
+      "known_findings": [],
+      "note": "OIG exclusions list \u00e2\u20ac\u201d individual names, DOBs. Role-gated. Never public."
+    },
+    {
+      "name": "census_demographics",
+      "label": "Census ACS 5-Year Demographics by ZCTA",
+      "script": "00_census_demographics_national.py",
+      "output_file": "census_demographics_national.csv",
+      "format": "csv",
+      "access_method": "census_api",
+      "uuid": null,
+      "dist_id": null,
+      "vintage": "ACS 2024 5-Year",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "acs_year",
+          "check": "constant_value",
+          "reason": "Census vintage label \u2014 constant for a single ACS pull. Expected."
+        }
+      ]
+    },
+    {
+      "name": "nh_provider_info",
+      "label": "NH Provider Info (Five-Star + Staffing + SFF)",
+      "script": "01_nh_provider_info_national.py",
+      "output_file": "nh_provider_info_national.csv",
+      "format": "csv",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "c977e9dc-c100-5531-aeb5-80cdff2eacc5",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [
+        "staffing_compliant_74pct",
+        "rn_hprd_22pct",
+        "turnover_46pct",
+        "sff_concentration"
+      ],
+      "schema_note": "CMS-3442-F compliance flags: rn_hprd_compliant, total_hprd_compliant, rn_weekend_compliant all null post-vacatur; staffing_compliant still updated",
+      "known_anomalies": [
+        {
+          "field": "special_focus_status",
+          "check": "null_rate",
+          "reason": "SFF status is sparse by design. Only ~530 of 14,695 national facilities carry SFF or SFF-candidate status (~3.6%). 96%+ null is expected distribution, not missing data."
+        },
+        {
+          "field": "special_focus_candidate_status",
+          "check": "null_rate",
+          "reason": "Same as special_focus_status \u00e2\u20ac\u201d expected sparsity."
+        },
+        {
+          "field": "rn_hprd_compliant",
+          "check": "type_anomaly",
+          "reason": "Boolean field (True/False string) \u00e2\u20ac\u201d numeric hint heuristic is a false positive. Field is 100% null post-CMS-3442-F vacatur. Documented in CORRECTIONS.md."
+        },
+        {
+          "field": "total_hprd_compliant",
+          "check": "type_anomaly",
+          "reason": "Boolean field (True/False string) \u00e2\u20ac\u201d numeric hint heuristic is a false positive. Field is 100% null post-CMS-3442-F vacatur. Documented in CORRECTIONS.md."
+        },
+        {
+          "field": "rn_weekend_compliant",
+          "check": "type_anomaly",
+          "reason": "Boolean field (True/False string) \u00e2\u20ac\u201d numeric hint heuristic is a false positive. Field is 100% null post-CMS-3442-F vacatur. Documented in CORRECTIONS.md."
+        },
+        {
+          "field": "rn_hprd_compliant",
+          "check": "null_rate",
+          "reason": "CMS-3442-F vacated 2025; CMS stopped populating this component flag. Expected all-null. Documented in CORRECTIONS.md."
+        },
+        {
+          "field": "total_hprd_compliant",
+          "check": "null_rate",
+          "reason": "CMS-3442-F vacated 2025; CMS stopped populating this component flag. Expected all-null. Documented in CORRECTIONS.md."
+        },
+        {
+          "field": "rn_weekend_compliant",
+          "check": "null_rate",
+          "reason": "CMS-3442-F vacated 2025; CMS stopped populating this component flag. Expected all-null. Documented in CORRECTIONS.md."
+        }
+      ]
+    },
+    {
+      "name": "nh_health_deficiencies",
+      "label": "NH Health Deficiencies",
+      "script": "02_nh_deficiencies_national.py",
+      "output_file": "nh_health_deficiencies_national.parquet",
+      "format": "parquet",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "327a1777-6c39-5872-9874-c18728c3c104",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "severity_level",
+        "scope",
+        "severity_desc",
+        "is_immediate_jeopardy",
+        "is_actual_harm",
+        "is_abuse_neglect",
+        "is_infection_control",
+        "is_resident_rights"
+      ],
+      "known_findings": [
+        "418k_citations",
+        "ij_30pct_facilities",
+        "abuse_19pct_facilities",
+        "436M_fines"
+      ],
+      "known_anomalies": [
+        {
+          "field": "tag_prefix",
+          "check": "constant_value",
+          "reason": "Health deficiency file contains only F-tags (F000-F999). K-tags and E-tags are in the fire safety file. tag_prefix='F' is expected and correct for this dataset."
+        }
+      ]
+    },
+    {
+      "name": "nh_fire_deficiencies",
+      "label": "NH Fire Safety Deficiencies",
+      "script": "02_nh_deficiencies_national.py",
+      "output_file": "nh_fire_deficiencies_national.parquet",
+      "format": "parquet",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "490c3ffa-b0c6-5dd1-9ca6-ed1d8cc84bdc",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "severity_level",
+        "scope",
+        "severity_desc",
+        "is_immediate_jeopardy",
+        "is_actual_harm"
+      ],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "is_abuse_neglect",
+          "check": "constant_value",
+          "reason": "Fire deficiency file does not carry abuse/neglect categorization \u2014 those tags only appear in health deficiency surveys. Always False in this file by design."
+        },
+        {
+          "field": "is_infection_ctrl_cat",
+          "check": "constant_value",
+          "reason": "Infection control is a health survey category, not fire safety. Always False in fire deficiency file."
+        },
+        {
+          "field": "is_resident_rights",
+          "check": "constant_value",
+          "reason": "Resident rights is a health survey category. Always False in fire deficiency file."
+        },
+        {
+          "field": "is_quality_care",
+          "check": "constant_value",
+          "reason": "Quality of care is a health survey category. Always False in fire deficiency file."
+        }
+      ]
+    },
+    {
+      "name": "nh_penalties",
+      "label": "NH Penalties",
+      "script": "03_nh_penalties_national.py",
+      "output_file": "nh_penalties_national.csv",
+      "format": "csv",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "3d67f2c4-d8d2-515a-9522-535fba9d9fd6",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [
+        "436M_fines",
+        "44pct_facilities_penalized"
+      ],
+      "known_anomalies": [
+        {
+          "field": "payment_denial_start",
+          "check": "type_anomaly",
+          "reason": "Date field (YYYY-MM-DD), not numeric. Harness _star heuristic was false-matching _start; heuristic fixed in health_check.py v1.1. No data issue."
+        },
+        {
+          "field": "payment_denial_days",
+          "check": "type_anomaly",
+          "reason": "Expected 15.1% non-null: only payment denial rows (2,292 of 15,181) have this field. Fines (12,889 rows) have null payment_denial_days. 15.1% = 2292/15181 exactly."
+        }
+      ]
+    },
+    {
+      "name": "nh_penalties_by_facility",
+      "label": "NH Penalties \u00e2\u20ac\u201d Facility Aggregates",
+      "script": "03_nh_penalties_national.py",
+      "output_file": "nh_penalties_by_facility.csv",
+      "format": "csv",
+      "access_method": "computed",
+      "uuid": null,
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "all"
+      ],
+      "known_findings": [],
+      "note": "Derived from nh_penalties_national.csv"
+    },
+    {
+      "name": "nh_mds_qm",
+      "label": "NH Quality Measures \u00e2\u20ac\u201d MDS-Based",
+      "script": "04_nh_quality_measures_national.py",
+      "output_file": "nh_mds_qm_national.parquet",
+      "format": "parquet",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "ebd11612-e160-581b-bd87-79db44cc43cd",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "used_in_five_star",
+          "check": "null_rate",
+          "reason": "CMS provides a flag indicating whether the MDS measure is a Five-Star input, but has not populated it. 100% null. CMS abandoned field \u2014 document in methods note as undocumented behavioral decision."
+        }
+      ]
+    },
+    {
+      "name": "nh_claims_qm",
+      "label": "NH Quality Measures \u00e2\u20ac\u201d Claims-Based",
+      "script": "04_nh_quality_measures_national.py",
+      "output_file": "nh_claims_qm_national.parquet",
+      "format": "parquet",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "dc0b509a-d96c-5eeb-b71b-9679ee42847f",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "collection_from",
+          "check": "constant_value",
+          "reason": "Claims QM collection period is fixed per vintage: all measures in this pull share 10/01/2024-09/30/2025. Constant by design."
+        },
+        {
+          "field": "collection_through",
+          "check": "constant_value",
+          "reason": "Claims QM collection period is fixed per vintage: all measures in this pull share 10/01/2024-09/30/2025. Constant by design."
+        },
+        {
+          "field": "used_in_five_star",
+          "check": "null_rate",
+          "reason": "CMS provides a flag indicating whether the claims measure is a Five-Star input, but has not populated it. 100% null. Same as MDS QM. CMS abandoned field."
+        }
+      ]
+    },
+    {
+      "name": "nh_qrp",
+      "label": "SNF Quality Reporting Program Measures",
+      "script": "04_nh_quality_measures_national.py",
+      "output_file": "nh_qrp_national.parquet",
+      "format": "parquet",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "df617e1b-0840-535e-b24f-0d04a7ff05a4",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "collection_from",
+          "check": "null_rate",
+          "reason": "CMS provides collection period dates in QRP dataset but has not populated them. 100% null. The reference_measure_intervals.py crosswalk provides these dates from a separate source."
+        },
+        {
+          "field": "collection_through",
+          "check": "null_rate",
+          "reason": "Same as collection_from \u2014 CMS abandoned field in QRP dataset."
+        }
+      ]
+    },
+    {
+      "name": "snf_vbp",
+      "label": "SNF Value-Based Purchasing",
+      "script": "05_snf_vbp_national.py",
+      "output_file": "snf_vbp_national.csv",
+      "format": "csv",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "cf1f058c-65d6-5496-9770-a244cfab2a13",
+      "vintage": "FY2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [
+        "vbp_78pct_penalty"
+      ]
+    },
+    {
+      "name": "pac_puf",
+      "label": "Post-Acute Care Public Use File",
+      "script": "06_pac_puf_national.py",
+      "output_file": "pac_puf_national.csv",
+      "format": "csv",
+      "access_method": "data_api_v1",
+      "uuid": "eaed338b-847e-41b1-a4d3-a206f40dc72b",
+      "dist_id": null,
+      "vintage": "RY2025",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "note": "Pulled with SMRY_CTGRY=PROVIDER filter. Full UUID contains IRF, LTACH, HHA rows \u00e2\u20ac\u201d re-pull without filter for Phase 3.",
+      "known_anomalies": [
+        {
+          "field": "YEAR",
+          "check": "constant_value",
+          "reason": "PAC PUF vintage year (2023) \u2014 constant within a single-vintage pull."
+        },
+        {
+          "field": "YEAR_TYPE",
+          "check": "constant_value",
+          "reason": "PAC PUF year type (FY) \u2014 constant field indicating fiscal year vintage."
+        },
+        {
+          "field": "SMRY_CTGRY",
+          "check": "constant_value",
+          "reason": "PAC PUF filter used in pull: SMRY_CTGRY=PROVIDER to get facility-level rows only."
+        },
+        {
+          "field": "SRVC_CTGRY",
+          "check": "constant_value",
+          "reason": "PAC PUF filter: SNF-only pull. All rows are SNF. Expand filter for Phase 3 multi-provider analysis."
+        },
+        {
+          "field": "BENE_RRL_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS uses '--' as a suppression sentinel for small cell sizes in PAC PUF. ~54% of cells are '--' (not numeric). Script 06 should coerce '--' -> NaN before writing. Fix before Phase 3 comorbidity/race analysis."
+        },
+        {
+          "field": "BENE_RACE_UNK_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. See BENE_RRL_PCT note. Same systematic issue."
+        },
+        {
+          "field": "BENE_CC_BH_ADHD_OTHCD_V1_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. ~68% suppressed. Same systematic issue as BENE_RRL_PCT."
+        },
+        {
+          "field": "BENE_CC_BH_BIPOLAR_V1_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "BENE_CC_BH_PD_V1_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "BENE_CC_BH_PTSD_V1_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "BENE_CC_BH_SCHIZO_OTHPSY_V1_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "BENE_CC_PH_ASTHMA_V2_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "BENE_CC_PH_HYPERTENSION_V2_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "BENE_CC_PH_PARKINSON_V2_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_INFCTN_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_NEOBLD_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_ENDONUTRMET_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_MNTBEHNEUDIS_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_NERVSYSTM_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_RSPSYSTM_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_DIGSYSTM_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_SKNMUSSYSTM_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_GUSYSTM_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "PRMRY_DX_SXILLDEF_PCT",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. Same systematic issue."
+        },
+        {
+          "field": "high_dual_pct",
+          "check": "type_anomaly",
+          "reason": "CMS '--' sentinel. 100% suppressed (all values are '--'). This field has no usable data in this pull."
+        },
+        {
+          "field": "high_therapy_intensity",
+          "check": "null_rate",
+          "reason": "CMS provides this field but has not populated it in recent PAC PUF vintages. 100% null. CMS abandoned field \u2014 document in methods note."
+        }
+      ]
+    },
+    {
+      "name": "snf_cost_report",
+      "label": "SNF Cost Report (HCRIS)",
+      "script": "07_snf_cost_report_national.py",
+      "output_file": "snf_cost_report_national.csv",
+      "format": "csv",
+      "access_method": "data_api_v1",
+      "uuid": "a69d3df7-3f66-4a0d-b5b8-0d66049bd565",
+      "dist_id": null,
+      "vintage": "FY2023",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "operating_margin_pct",
+        "snf_pct",
+        "medicaid_pct",
+        "occupancy_pct"
+      ],
+      "known_findings": [
+        "median_margin_neg39"
+      ],
+      "schema_note": "Use SNF Days Title XVIII/XIX/Total, NOT Total Days Title X (VA-only days)"
+    },
+    {
+      "name": "nh_survey_summary",
+      "label": "NH Survey Summary",
+      "script": "08_nh_survey_summary_national.py",
+      "output_file": "nh_survey_summary_national.csv",
+      "format": "csv",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "23d16001-bbf2-58b9-909c-ec21dc8c8877",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "known_anomalies": [
+        {
+          "field": "count_of_automatic_sprinkler_systems_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory counts in the health survey summary are zero \u2014 fire citations are tracked in the separate fire safety dataset, not in health survey summary."
+        },
+        {
+          "field": "count_of_corridor_walls_and_doors_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory. Zero in health survey summary by design."
+        },
+        {
+          "field": "count_of_emergency_plans_and_fire_drills_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory. Zero in health survey summary by design."
+        },
+        {
+          "field": "count_of_fire_alarm_systems_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory. Zero in health survey summary by design."
+        },
+        {
+          "field": "count_of_hazardous_area_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory. Zero in health survey summary by design."
+        },
+        {
+          "field": "count_of_illumination_and_emergency_power_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory. Zero in health survey summary by design."
+        },
+        {
+          "field": "count_of_laboratories_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory. Zero in health survey summary by design."
+        },
+        {
+          "field": "count_of_smoking_regulations_deficiencies",
+          "check": "constant_value",
+          "reason": "Fire safety subcategory. Zero in health survey summary by design."
+        },
+        {
+          "field": "processing_date",
+          "check": "constant_value",
+          "reason": "CMS batch processing date. Constant within a vintage pull."
+        }
+      ]
+    },
+    {
+      "name": "nh_state_benchmarks",
+      "label": "NH State Benchmarks",
+      "script": "10_nh_state_benchmarks_national.py",
+      "output_file": "nh_state_benchmarks_national.csv",
+      "format": "csv",
+      "access_method": "dkan_post",
+      "uuid": null,
+      "dist_id": "20098691-f735-5ea4-b364-1874ec34b950",
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [],
+      "known_findings": [],
+      "schema_note": "National aggregate row uses NATION not US as state identifier"
+    },
+    {
+      "name": "reference_ftag_citations",
+      "label": "F-Tag / K-Tag / E-Tag Reference Crosswalk",
+      "script": "reference_ftag_citations.py",
+      "output_file": "reference_ftag_citations.csv",
+      "format": "csv",
+      "access_method": "computed",
+      "uuid": null,
+      "dist_id": null,
+      "vintage": "Static (SOM Appendix PP)",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "all"
+      ],
+      "known_findings": [],
+      "note": "Built from SOM Appendix PP. Verify against SOM before extending severity stratification."
+    },
+    {
+      "name": "reference_measure_intervals",
+      "label": "QM Measure Code \u00e2\u20ac\u201d Collection Period Reference",
+      "script": "reference_measure_intervals.py",
+      "output_file": "reference_measure_intervals.csv",
+      "format": "csv",
+      "access_method": "computed",
+      "uuid": null,
+      "dist_id": null,
+      "vintage": "CMS QM Technical Specs",
+      "pull_date": "2026-07-11",
+      "gitignored": false,
+      "fields_computed": [
+        "all"
+      ],
+      "known_findings": [],
+      "note": "CMS updated 9 measure codes; 2 were mislabeled. Fixed 2026-07-05. Verify any new QM pull."
+    }
+  ]
+}

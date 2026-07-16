@@ -29,14 +29,14 @@ what replaced it, why it changed, and the commit where the correction was made.
   correlating with its own inputs is arithmetic, not association
 - Commit: 74c7de6
 
-**2026-07-15 — staffing_compliant threshold confirmed; OBRA hypothesis refuted by data**
+**2026-07-15 — staffing_compliant threshold: two-condition derivation was incomplete; three-condition rule confirmed**
 
 - Original phrasing (commit a033120): "not staffing compliant by CMS standards"
-- Corrected phrasing: "fall below the threshold in CMS's proposed minimum staffing rule"
-- Challenge raised: `rn_hprd_compliant` and `total_hprd_compliant` are all null; the correction was written without knowing what threshold `staffing_compliant` actually uses. Hypothesis was that it measures the OBRA 1987 requirement (RN on duty 8 consecutive hours daily, licensed nurse 24/7 — a shift-presence test, not HPRD-based), not the proposed HPRD minimums.
-- Resolution: Data contradicts the OBRA hypothesis. Cross-tabulation shows `staffing_compliant=True` requires `rn_hprd ≥ 0.55` (no True facility has rn_hprd < 0.55; minimum observed is 0.551). Adding `rn_weekend_hprd ≥ 0.55` as a second condition explains 14,681 of 14,695 facilities (99.9%). OBRA does not define HPRD thresholds; this field clearly encodes one. The corrected phrasing is directionally right.
-- Remaining gap: the exact threshold (0.55) and its weekend dimension are derived from data, not confirmed against CMS documentation. README updated to state the threshold explicitly; see also pending item below.
-- Commit: c43b9b9
+- First correction (commit c43b9b9): "falls below the threshold in CMS's proposed minimum staffing rule"; flagged as derived from data, two-condition model (rn_hprd ≥ 0.55 AND rn_weekend_hprd ≥ 0.55)
+- Second correction (this entry): two-condition model was incomplete. CMS-3442-F (Minimum Staffing Standards for Long-Term Care Facilities, Jun 2024) defines `staffing_compliant=True` as: RN HPRD ≥ 0.55, Weekend RN HPRD ≥ 0.55, AND Total Nurse HPRD ≥ 2.45 — all three required. The ~14 residuals from the two-condition model are explained by the 2.45 total threshold: each has total nurse HPRD < 2.43 (high RN presence, insufficient total coverage). With all three conditions, the model explains 14,695 of 14,695 facilities.
+- Source: CMS-3442-F script docstring, confirmed by data cross-tabulation
+- The rule was vacated in 2025. CMS continues to populate `staffing_compliant` but the three component flags (`rn_hprd_compliant`, `total_hprd_compliant`, `rn_weekend_compliant`) have been null since the vacatur.
+- Commit: 7f30b75 (two-condition error); corrected this commit
 
 ---
 
@@ -56,13 +56,13 @@ what replaced it, why it changed, and the commit where the correction was made.
   meet).
 - Action required: verify against Five-Star Technical Users' Guide before treating 22.9% as final
 
-**rn_hprd_compliant and total_hprd_compliant columns — all null; staffing_compliant threshold partially resolved**
+**rn_hprd_compliant and total_hprd_compliant columns — all null; RESOLVED**
 - The NH Provider Info output contains `rn_hprd_compliant`, `total_hprd_compliant`, and
   `rn_weekend_compliant` (columns 30–32). All three are entirely null in the June 2026 pull.
-- `staffing_compliant` (column 33) is populated: 10,951 False, 3,744 True. Data analysis
-  confirms it encodes `(rn_hprd ≥ 0.55) AND (rn_weekend_hprd ≥ 0.55)` — 99.9% match rate.
-- The null individual-component columns (rn_hprd_compliant, total_hprd_compliant) are likely
-  scaffolding for the full proposed rule that was never populated after the rule was vacated.
-  The composite `staffing_compliant` flag continued to be updated; the component flags did not.
-- Remaining action: confirm the 0.55 threshold and weekend requirement against the Five-Star
-  Technical Users' Guide. The data derivation is strong (99.9%) but not documentation-anchored.
+- Explanation confirmed: CMS-3442-F was vacated in 2025. CMS stopped populating the individual
+  component compliance flags after the vacatur but has continued updating the composite
+  `staffing_compliant` field. The null fields are regulatory history frozen at the point of
+  vacatur; they are not data errors.
+- `staffing_compliant` (column 33) is populated: 10,951 False, 3,744 True. Three-condition
+  definition confirmed from CMS-3442-F and cross-validated against all 14,695 rows.
+- Resolved. No further action required on null columns.

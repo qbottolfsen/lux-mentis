@@ -48,11 +48,11 @@ Staffing findings use the NH Provider Info universe (14,695). Deficiency and pen
 
 ### Staffing
 
-74.5% of SNFs — 10,951 of 14,695 — have `staffing_compliant=False` in CMS NH Provider Info data. Cross-tabulation against staffing columns confirms this flag encodes a composite: RN HPRD ≥ 0.55 on both weekdays and weekends. Every facility with `staffing_compliant=True` meets both conditions; every facility with `staffing_compliant=False` fails at least one. The 0.55 RN HPRD minimum came from the CMS proposed minimum staffing rule (FR 89:40876, Apr 2024); that rule was vacated in federal litigation in 2025, but CMS continues to publish the compliance flag against it.
+74.5% of SNFs — 10,951 of 14,695 — have `staffing_compliant=False` in CMS NH Provider Info data. The flag encodes a three-part composite under CMS-3442-F (Minimum Staffing Standards for Long-Term Care, Jun 2024): RN HPRD ≥ 0.55, Weekend RN HPRD ≥ 0.55, and Total Nurse HPRD ≥ 2.45. Cross-tabulation across all 14,695 facilities confirms the definition: zero True facilities fail any condition; zero False facilities meet all three. The ~14 residuals from a two-condition test are explained by the total-HPRD floor — each has total nurse HPRD below 2.43 despite adequate RN hours, meaning they have sufficient registered nurses but insufficient total nurse coverage. The rule was vacated in federal litigation in 2025; CMS continues to publish the composite flag but the three component flags (`rn_hprd_compliant`, `total_hprd_compliant`, `rn_weekend_compliant`) have been null since the vacatur.
 
-A separate, independently computed metric: 22.9% of all SNFs have weekday RN HPRD below 0.4 — a more lenient floor than the 0.55 the compliance flag uses. Both numbers are Level 1 observations from the same source column (`rn_hprd`); they measure different thresholds against different windows.
+A separate, independently computed metric: 22.9% of all SNFs have weekday RN HPRD below 0.4 — a more lenient floor than the 0.55 in the compliance definition. Both numbers are Level 1 observations from the same source column (`rn_hprd`); they measure different thresholds.
 
-National average RN HPRD is 0.68. National nurse turnover is 46.1%. Geographic concentration on the 0.55 compliance flag: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its SNFs failing the combined weekday-and-weekend 0.55 RN threshold. *(Level 1 — compliance flag threshold confirmed from data; see [CORRECTIONS.md](CORRECTIONS.md))*
+National average RN HPRD is 0.68. National nurse turnover is 46.1%. Geographic concentration: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54% — each has a majority of its SNFs failing the three-part minimum. *(Level 1 — see [CORRECTIONS.md](CORRECTIONS.md))*
 
 ### Deficiency Citations
 
@@ -244,6 +244,29 @@ The CSV versions of these six files are excluded in `.gitignore`. Anyone who has
 # Read example -- same pattern as the CSV reads in every other script
 df = pd.read_parquet("output_reference/nh_health_deficiencies_national.parquet")
 ```
+
+---
+
+## Conformance Harness
+
+`python/health_check.py` runs structural conformance checks against every output file in the pipeline. Run after any re-pull or schema-affecting change.
+
+```
+python python\health_check.py              # local files only
+python python\health_check.py --live       # also fetches 1-row sample from live API
+python python\health_check.py --dataset nh_provider_info  # single dataset
+```
+
+Seven checks per dataset: fields in API not in our output (missed data), fields in output not in API (CMS renamed or dropped), type anomalies, null-rate anomalies (≥95% null), constant-value fields, column-name divergence across access methods, row-count anomalies. Each finding is tiered BLOCKING (touches a published finding), LATENT (touches a field we will use), or INFO (touches nothing current).
+
+Known patterns — field is expected null, expected constant, or a documented CMS behavioral decision — are registered in `python/datasets_registry.json` with a `known_anomalies` entry explaining why. The harness skips them on subsequent runs and reports only new findings. The distinction between "known expected" and "newly appeared" is preserved in the report.
+
+Output: `python/output_reference/divergence_report.json` — machine-readable, committed to repo, regenerated on every run.
+
+**Current status (2026-07-16):** BLOCKING=0, LATENT=3. Three genuine open items:
+- `facility_master.individual_owner_count` — 25% parseable as numeric; investigate type
+- `census_demographics.pct_disability` — 98.3% null; ACS S1811 ZCTA coverage gap
+- `reference_measure_intervals.measure_date_range` — 100% null; computed field not populated
 
 ---
 
