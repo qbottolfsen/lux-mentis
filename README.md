@@ -26,11 +26,11 @@ These observations come from CMS nursing home data current as of June 2026, cove
 
 ### Value-Based Purchasing
 
-78.6% of SNFs nationally receive a VBP incentive payment penalty (IPM < 1.0). 21.4% receive a bonus. None are neutral. The program intended to reward performance is penalizing nearly four out of five participating facilities. *(Level 1)*
+78.6% of VBP-scored facilities (10,146 of 12,901) receive an incentive payment penalty (IPM < 1.0). 21.4% receive a bonus. None are neutral. 12,901 facilities are VBP-scored — 89.4% of all Medicare SNFs; the remainder fall below CMS's minimum case threshold. Of all SNFs nationally, 70.3% are receiving a VBP penalty. *(Level 1)*
 
 ### Staffing
 
-75.5% of SNFs — 10,951 of 14,695 — fall below the threshold in CMS's proposed minimum staffing rule. 22.9% of all SNFs nationally have RN HPRD below 0.4, the specific threshold CMS has proposed as a minimum. The geographic concentration matters: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its facilities below that level. National average RN HPRD is 0.68. National nurse turnover is 46.1%. *(Level 1)*
+74.5% of SNFs — 10,951 of 14,695 — fall below the threshold in CMS's proposed minimum staffing rule. 22.9% of all SNFs nationally have RN HPRD below 0.4, the specific threshold CMS has proposed as a minimum. The geographic concentration matters: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its facilities below that level. National average RN HPRD is 0.68. National nurse turnover is 46.1%. *(Level 1)*
 
 ### Deficiency Citations
 
