@@ -21,9 +21,10 @@ Contains the following, pre-aggregated from their source datasets by CMS:
 
 Compliance flags (CMS-3442-F Final Rule, Jun 2024):
   rn_hprd_compliant       True if reported RN HPRD >= 0.55
-  total_hprd_compliant    True if reported Total Nurse HPRD >= 2.45
-  rn_weekend_compliant    True if Weekend RN HPRD >= 0.55  (24/7 RN proxy)
-  staffing_compliant      True if all three met
+  aide_hprd_compliant     True if reported Nurse Aide (CNA) HPRD >= 2.45
+  total_hprd_compliant    True if reported Total Nurse HPRD >= 3.48
+  rn_weekend_compliant    True if Weekend RN HPRD >= 0.55
+  staffing_compliant      True if all four met
 
 Output: output_reference/nh_provider_info_national.csv
 
@@ -55,7 +56,8 @@ HI_MAX = 46
 
 # CMS-3442-F minimum staffing thresholds (Final Rule, Jun 2024)
 RN_HPRD_MIN    = 0.55
-TOTAL_HPRD_MIN = 2.45
+AIDE_HPRD_MIN  = 2.45   # nurse aide (CNA) minimum — tested against cna_hprd
+TOTAL_HPRD_MIN = 3.48   # total nurse minimum — tested against total_hprd
 
 # Exact source column names (confirmed from full 99-column probe 2026-07-15)
 SRC = {
@@ -187,12 +189,14 @@ out_rows = []
 for r in all_rows:
     total_hprd     = safe_float(g(r, "total_hprd"))
     rn_hprd        = safe_float(g(r, "rn_hprd"))
+    cna_hprd       = safe_float(g(r, "cna_hprd"))
     rn_weekend     = safe_float(g(r, "rn_weekend_hprd"))
 
     rn_ok          = rn_hprd    >= RN_HPRD_MIN    if rn_hprd    is not None else None
+    cna_ok         = cna_hprd   >= AIDE_HPRD_MIN  if cna_hprd   is not None else None
     total_ok       = total_hprd >= TOTAL_HPRD_MIN if total_hprd is not None else None
     rn_weekend_ok  = rn_weekend >= RN_HPRD_MIN    if rn_weekend is not None else None
-    all_ok         = bool(rn_ok and total_ok and rn_weekend_ok)
+    all_ok         = bool(rn_ok and cna_ok and total_ok and rn_weekend_ok)
 
     chain = g(r, "chain_name")
     chain_affiliated = "Y" if chain and str(chain).strip() not in ("", "N/A") else "N"
@@ -232,6 +236,7 @@ for r in all_rows:
         "casemix_index":              g(r, "casemix_index"),
         # Compliance flags (CMS-3442-F)
         "rn_hprd_compliant":          "" if rn_ok         is None else str(rn_ok),
+        "aide_hprd_compliant":        "" if cna_ok        is None else str(cna_ok),
         "total_hprd_compliant":       "" if total_ok      is None else str(total_ok),
         "rn_weekend_compliant":       "" if rn_weekend_ok is None else str(rn_weekend_ok),
         "staffing_compliant":         str(all_ok),

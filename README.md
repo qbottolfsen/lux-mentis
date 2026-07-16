@@ -48,7 +48,7 @@ Staffing findings use the NH Provider Info universe (14,695). Deficiency and pen
 
 ### Staffing
 
-74.5% of SNFs — 10,951 of 14,695 — have `staffing_compliant=False` in CMS NH Provider Info data. The flag encodes a three-part composite under CMS-3442-F (Minimum Staffing Standards for Long-Term Care, Jun 2024): RN HPRD ≥ 0.55, Weekend RN HPRD ≥ 0.55, and Total Nurse HPRD ≥ 2.45. Cross-tabulation across all 14,695 facilities confirms the definition: zero True facilities fail any condition; zero False facilities meet all three. The ~14 residuals from a two-condition test are explained by the total-HPRD floor — each has total nurse HPRD below 2.43 despite adequate RN hours, meaning they have sufficient registered nurses but insufficient total nurse coverage. The rule was vacated in federal litigation in 2025; CMS continues to publish the composite flag but the three component flags (`rn_hprd_compliant`, `total_hprd_compliant`, `rn_weekend_compliant`) have been null since the vacatur.
+**[PENDING CORRECTION — see [CORRECTIONS.md](CORRECTIONS.md)]** The pipeline currently shows 74.5% of SNFs (10,951 of 14,695) with `staffing_compliant=False`, but this figure uses an incorrect threshold formula and understates non-compliance. The script was applying 2.45 (the nurse aide minimum) to `total_hprd` (the full RN+LPN+CNA sum) and never testing the aide field (`cna_hprd`) independently. The total nurse minimum under CMS-3442-F is 3.48, not 2.45. Under the rule's actual four-part formula (RN HPRD ≥ 0.55, Weekend RN HPRD ≥ 0.55, Nurse Aide HPRD ≥ 2.45, Total Nurse HPRD ≥ 3.48): **87.6% of SNFs (12,868 of 14,695) fail**. 1,917 facilities that currently pass would fail the rule. Script corrected; this figure will be updated to 87.6% after output CSV is regenerated. The rule was vacated in federal litigation in 2025; CMS continues to publish the composite flag.
 
 A separate, independently computed metric: 22.9% of all SNFs have weekday RN HPRD below 0.4 — a more lenient floor than the 0.55 in the compliance definition. Both numbers are Level 1 observations from the same source column (`rn_hprd`); they measure different thresholds.
 
@@ -72,6 +72,8 @@ Top deficiency categories nationally: Quality of Life and Care (107,576), Reside
 ### Five-Star Component Distribution
 
 Five-Star is a composite of three domains: health inspection, staffing, and quality measures. The table below shows how the constituent measures of two of those domains distribute across each star tier. These are not independently discovered relationships — citations feed the inspection domain, and RN HPRD and turnover feed the staffing domain. What the table shows is the magnitude of spread across tiers and the absence of any inversion: every measure moves in the same direction across all five levels without exception. *(Level 1)*
+
+*Divergence note: CMS provides a `used_in_five_star` flag in both the MDS QM and claims QM datasets to indicate which quality measures are Five-Star inputs. Both flags are 100% null in the June 2026 pull — CMS stopped populating the field (confirmed in conformance harness; documented in `datasets_registry.json`). The inputs shown here are identified from the Five-Star Technical Users' Guide and CMS methodology documentation, not from the abandoned API flag. This is material to the circularity question: without a populated flag, the data cannot itself distinguish Five-Star-input QMs from non-input QMs.*
 
 | Star | Facilities | Avg citations | RN HPRD | Nurse turnover |
 |------|-----------|---------------|---------|----------------|
@@ -263,10 +265,11 @@ Known patterns — field is expected null, expected constant, or a documented CM
 
 Output: `python/output_reference/divergence_report.json` — machine-readable, committed to repo, regenerated on every run.
 
-**Current status (2026-07-16):** BLOCKING=0, LATENT=3. Three genuine open items:
-- `facility_master.individual_owner_count` — 25% parseable as numeric; investigate type
-- `census_demographics.pct_disability` — 98.3% null; ACS S1811 ZCTA coverage gap
-- `reference_measure_intervals.measure_date_range` — 100% null; computed field not populated
+**Current status (2026-07-15):** BLOCKING=2, LATENT=2.
+- [BLOCKING] `facility_master.individual_owner_count` — 25% parseable as numeric; blocks identity-gap quantification; investigate before Phase 3 owner analysis
+- [BLOCKING] `facility_master.owner_count` — 25% parseable as numeric; same issue (was accidentally suppressed in prior harness run; now surfaced)
+- [LATENT] `census_demographics.pct_disability` — 98.3% null; ACS S1811 ZCTA coverage gap
+- [LATENT] `reference_measure_intervals.measure_date_range` — 100% null; computed field not populated
 
 ---
 

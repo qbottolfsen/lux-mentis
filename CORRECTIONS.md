@@ -29,14 +29,15 @@ what replaced it, why it changed, and the commit where the correction was made.
   correlating with its own inputs is arithmetic, not association
 - Commit: 74c7de6
 
-**2026-07-15 — staffing_compliant threshold: two-condition derivation was incomplete; three-condition rule confirmed**
+**2026-07-15 — staffing_compliant threshold: three successive corrections**
 
 - Original phrasing (commit a033120): "not staffing compliant by CMS standards"
-- First correction (commit c43b9b9): "falls below the threshold in CMS's proposed minimum staffing rule"; flagged as derived from data, two-condition model (rn_hprd ≥ 0.55 AND rn_weekend_hprd ≥ 0.55)
-- Second correction (this entry): two-condition model was incomplete. CMS-3442-F (Minimum Staffing Standards for Long-Term Care Facilities, Jun 2024) defines `staffing_compliant=True` as: RN HPRD ≥ 0.55, Weekend RN HPRD ≥ 0.55, AND Total Nurse HPRD ≥ 2.45 — all three required. The ~14 residuals from the two-condition model are explained by the 2.45 total threshold: each has total nurse HPRD < 2.43 (high RN presence, insufficient total coverage). With all three conditions, the model explains 14,695 of 14,695 facilities.
-- Source: CMS-3442-F script docstring, confirmed by data cross-tabulation
-- The rule was vacated in 2025. CMS continues to populate `staffing_compliant` but the three component flags (`rn_hprd_compliant`, `total_hprd_compliant`, `rn_weekend_compliant`) have been null since the vacatur.
-- Commit: 7f30b75 (two-condition error); corrected this commit
+- First correction (commit c43b9b9): two-condition model (rn_hprd ≥ 0.55 AND rn_weekend_hprd ≥ 0.55); flagged as derived from data
+- Second correction (commit 7f30b75): two-condition model was incomplete — added a third condition (total nurse HPRD ≥ 2.45) that resolved the ~14 residuals. Zero exceptions across all 14,695 facilities. *This second correction was itself wrong — see third correction below.*
+- **Third correction (this entry — BLOCKING; output CSV must be regenerated):** The "Total Nurse HPRD ≥ 2.45" described in the second correction misidentifies both the field and the value. Per CMS-3442-F: 2.45 is the *nurse aide (CNA)* minimum and is applied to `cna_hprd`; the *total nurse* minimum is 3.48, applied to `total_hprd`. The script set `TOTAL_HPRD_MIN = 2.45` and applied it to `total_hprd` (RN+LPN+CNA) — the aide threshold on the wrong field — and never tested `cna_hprd` at all. The formula fit the data perfectly because it was circular: the script computed the flag with its own constants, then cross-validated the flag against those same constants. Under the rule's actual four-part formula (rn ≥ 0.55, weekend_rn ≥ 0.55, aide ≥ 2.45, total ≥ 3.48): **12,868 of 14,695 facilities fail — 87.6%.** 1,917 facilities that currently pass `staffing_compliant` would fail the rule. The published 74.5% is a floor.
+- Source: threshold_verify.py cross-tabulation; CMS-3442-F Final Rule text
+- Status: script corrected; output CSV must be regenerated; README carries PENDING flag until 74.5% is replaced with 87.6%
+- Commits: c43b9b9 (first correction), 7f30b75 (second — incomplete), this commit (third)
 
 ---
 

@@ -134,11 +134,6 @@
           "field": "acs_year",
           "check": "constant_value",
           "reason": "Census vintage label \u2014 constant across the ZCTA join (2024-5yr). Expected."
-        },
-        {
-          "field": "owner_count",
-          "check": "type_anomaly",
-          "reason": "LATENT \u2014 NOT suppressed. This field is only 25% numeric; investigate whether it contains boolean flags or counts. Keep in divergence output."
         }
       ]
     },

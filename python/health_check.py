@@ -60,6 +60,7 @@ FINDING_FIELDS = {
     "snf_vbp":             ["incentive_payment_multiplier", "performance_score"],
     "snf_cost_report":     ["snf_days_title_18", "snf_days_title_19", "snf_days_title_18_19",
                             "snf_bed_days_available", "net_patient_revenue", "total_costs"],
+    "facility_master":     ["individual_owner_count", "owner_count"],
 }
 
 DKAN_BASE = "https://data.cms.gov/provider-data/api/1/datastore/query/{dist_id}"
