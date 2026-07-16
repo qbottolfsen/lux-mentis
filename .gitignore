@@ -1,0 +1,27 @@
+# Files containing individual names — role-gated, never public
+python/output_reference/leie_national.csv
+python/output_reference/snf_owners_national.csv
+
+# Large generated outputs (>50 MB) — regenerate by running the corresponding scripts
+# pos_iqies: 00_pos_iqies_national.py | nh_health_deficiencies: 02_nh_health_deficiencies_national.py
+# nh_qrp: 07_nh_qrp_national.py | nh_fire_deficiencies: 03_nh_fire_deficiencies_national.py
+# nh_mds_qm: 04_nh_quality_measures_national.py
+python/output_reference/pos_iqies_national.csv
+python/output_reference/nh_health_deficiencies_national.csv
+python/output_reference/nh_qrp_national.csv
+python/output_reference/nh_fire_deficiencies_national.csv
+python/output_reference/nh_mds_qm_national.csv
+
+# Cache and logs — generated at runtime
+python/output_reference/cache/
+python/logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,2 @@
+state,facility_count,avg_performance_score,min_performance_score,max_performance_score,bonus_count,penalty_count,nat_bottom_quartile_count,nat_top_quartile_count
+HI,39,51.43,6.35,89.11,26,13,3,28

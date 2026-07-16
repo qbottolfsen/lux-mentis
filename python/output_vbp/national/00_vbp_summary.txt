@@ -1,0 +1,22 @@
+SNF VBP PERFORMANCE — FY2026
+Scope: NATIONAL
+Run date: 2026-07-15
+Data: FY_2026_SNF_VBP_Facility_Performance.csv
+
+UNIVERSE: 13900 facilities (13900 with VBP score, 0 below case minimum / not scored)
+  Bonus (multiplier > 1.0):   2980
+  Penalty (multiplier < 1.0): 10920
+
+NATIONAL VBP DISTRIBUTION (n=13900 scored facilities):
+  Q1=20.4  Median=31.2  Q3=44.1
+
+NATIONAL SNFRM BENCHMARKS (readmission):
+  snfrm_base_national: 0.20190
+  snfrm_perf_national: 0.20532
+
+METHODOLOGY NOTE: VBP Performance Score is a composite of 4 measure scores.
+  Facilities missing case minimums on 1+ measures are still in the program
+  but scored only on available measures — composite may be artificially
+  inflated or deflated. See fn_*_flag columns for per-measure suppression status.
+  national_vbp_tier: relative to full national distribution.
+  state_vbp_tier:    relative to within-state distribution only.

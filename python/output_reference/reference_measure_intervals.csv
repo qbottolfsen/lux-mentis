@@ -1,0 +1,48 @@
+measure_code,measure_description,data_collection_period_from_date,data_collection_period_through_date,measure_date_range,processing_date
+004,Rate of potentially preventable hospital readmissions 30 days after discharge from a SNF,10/01/2022,09/30/2024,,20260601
+005,Rate of successful return to home or community from a SNF,10/01/2022,09/30/2024,,20260601
+006,Medicare spending per beneficiary (MSPB) for residents in SNFs,10/01/2022,09/30/2024,,20260601
+007,Percentage of SNF residents whose medications were reviewed and who received follow-up care when medication issues were identified,07/01/2024,06/30/2025,,20260601
+013,Percentage of SNF residents who experience one or more falls with major injury during their SNF stay,07/01/2024,06/30/2025,,20260601
+024,Percentage of SNF residents who achieve or exceed a self-care ability expected for their condition at discharge,07/01/2024,06/30/2025,,20260601
+025,Percentage of SNF residents who achieve or exceed the level of movement expected for their condition at discharge,07/01/2024,06/30/2025,,20260601
+038,Percentage of residents with pressure ulcers/injuries that are new or worsened,07/01/2024,06/30/2025,,20260601
+039,Rate of healthcare associated infections acquired during the SNF stay that resulted in hospitalization,10/01/2023,09/30/2024,,20260601
+040,Percentage of SNF healthcare personnel who are up to date with their COVID-19 vaccines,04/01/2025,06/30/2025,,20260601
+041,Percentage of healthcare personnel who got a flu shot for the current season,10/01/2024,03/31/2025,,20260601
+042,Percentage of SNF residents who are at or above an expected ability to care for themselves and move around at discharge,07/01/2024,06/30/2025,,20260601
+043,Percentage of residents where the SNF provided a current medication list to the next healthcare setting,07/01/2024,06/30/2025,,20260601
+044,"Percentage of residents where the SNF provided a current medication list to the resident, family, and/or caregiver at final discharge",07/01/2024,06/30/2025,,20260601
+045,Percentage of SNF residents who are up to date with their COVID-19 vaccines,04/01/2025,06/30/2025,,20260601
+401,Percentage of long-stay residents whose need for help with daily activities has increased,01/01/2025,12/31/2025,,20260601
+404,Percentage of long-stay residents who lose too much weight,01/01/2025,12/31/2025,,20260601
+406,Percentage of long-stay residents with a catheter inserted and left in their bladder,01/01/2025,12/31/2025,,20260601
+407,Percentage of long-stay residents with a urinary tract infection,01/01/2025,12/31/2025,,20260601
+408,Percentage of long-stay residents who have depressive symptoms,01/01/2025,12/31/2025,,20260601
+409,Percentage of long-stay residents who were physically restrained,01/01/2025,12/31/2025,,20260601
+410,Percentage of long-stay residents experiencing one or more falls with major injury,01/01/2025,12/31/2025,,20260601
+415,Percentage of long-stay residents assessed and appropriately given the pneumococcal vaccine,01/01/2025,12/31/2025,,20260601
+430,Percentage of short-stay residents assessed and appropriately given the pneumococcal vaccine,10/01/2024,12/31/2025,,20260601
+434,Percentage of short-stay residents who newly received an antipsychotic medication,10/01/2024,12/31/2025,,20260601
+451,Percentage of long-stay residents whose ability to walk independently worsened,01/01/2025,12/31/2025,,20260601
+452,Percentage of long-stay residents who received an antianxiety or hypnotic medication,01/01/2025,12/31/2025,,20260601
+454,Percentage of long-stay residents assessed and appropriately given the seasonal influenza vaccine,07/01/2024,06/30/2025,,20260601
+472,Percentage of short-stay residents who were assessed and appropriately given the seasonal influenza vaccine,07/01/2024,06/30/2025,,20260601
+479,Percentage of long-stay residents with pressure ulcers,01/01/2025,12/31/2025,,20260601
+480,Percentage of long-stay residents with new or worsened bowel or bladder incontinence,01/01/2025,12/31/2025,,20260601
+481,Percentage of long-stay residents who received an antipsychotic medication,01/01/2025,12/31/2025,,20260601
+521,Percentage of short-stay residents who were rehospitalized after a nursing home admission,10/01/2024,09/30/2025,,20260601
+522,Percentage of short-stay residents who had an outpatient emergency department visit,10/01/2024,09/30/2025,,20260601
+551,Number of hospitalizations per 1000 long-stay resident days,10/01/2024,09/30/2025,,20260601
+552,Number of outpatient emergency department visits per 1000 long-stay resident days,10/01/2024,09/30/2025,,20260601
+C_F_CMPL,Most recent 12 month period for deficiencies cited on fire safety inspection complaint surveys,06/01/2025,05/31/2026,,20260601
+C_H_CMPL,Most recent 12 month period for deficiencies cited on health inspection complaint surveys,06/01/2025,05/31/2026,,20260601
+C_IC_SRVY,Most recent 12 month period for deficiencies cited on infection control surveys,06/01/2025,05/31/2026,,20260601
+P1_F_CMPL,First prior 12 month period for deficiencies cited on fire safety inspection complaint surveys,06/01/2024,05/31/2025,,20260601
+P1_H_CMPL,First prior 12 month period for deficiencies cited on health inspection complaint surveys,06/01/2024,05/31/2025,,20260601
+P1_IC_SRVY,First prior 12 month period for deficiencies cited on infection control surveys,06/01/2024,05/31/2025,,20260601
+P2_F_CMPL,Second prior 12 month period for deficiencies cited on fire safety inspection complaint surveys,06/01/2023,05/31/2024,,20260601
+P2_H_CMPL,Second prior 12 month period for deficiencies cited on health inspection complaint surveys,06/01/2023,05/31/2024,,20260601
+P2_IC_SRVY,Second prior 12 month period for deficiencies cited on infection control surveys,06/01/2023,05/31/2024,,20260601
+STAFFING_LEVELS,Reporting Period for Nursing Home Staffing Level Measures,10/01/2025,12/31/2025,,20260601
+STAFFING_TURNOVER,Reporting Period for Nursing Home Staff Turnover Measures,10/01/2024,09/30/2025,,20260601

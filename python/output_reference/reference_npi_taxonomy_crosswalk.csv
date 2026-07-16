@@ -1,0 +1,68 @@
+MEDICARE SPECIALTY CODE,MEDICARE PROVIDER/SUPPLIER TYPE DESCRIPTION,PROVIDER TAXONOMY CODE,"PROVIDER TAXONOMY DESCRIPTION:  TYPE, CLASSIFICATION, SPECIALIZATION"
+01,Physician/General Practice,208D00000X,Allopathic & Osteopathic Physicians/General Practice
+02,Physician/General Surgery,208600000X,Allopathic & Osteopathic Physicians/Surgery
+A4[11],Home Health Agency,251E00000X,Agencies/Home Health
+A4[11],Home Health Agency (Subunit),251E00000X,Agencies/Home Health
+A5,Pharmacy ,333600000X,Suppliers/Pharmacy
+A5,Pharmacy ,3336C0002X,"Suppliers/Pharmacy, Clinic Pharmacy"
+A5,Pharmacy ,3336C0003X,"Suppliers/Pharmacy, Community/Retail Pharmacy"
+A5,Pharmacy ,3336C0004X,"Suppliers/Pharmacy, Compounding Pharmacy"
+A5,Pharmacy ,3336H0001X,"Suppliers/Pharmacy, Home Infusion Therapy Pharmacy"
+A5,Pharmacy ,3336I0012X,"Suppliers/Pharmacy, Institutional Pharmacy"
+A5,Pharmacy ,3336L0003X,"Suppliers/Pharmacy, Long-term Care Pharmacy"
+A5,Pharmacy ,3336M0002X,"Suppliers/Pharmacy, Mail Order Pharmacy"
+A5,Pharmacy ,3336M0003X,"Suppliers/Pharmacy, Managed Care Organization Pharmacy"
+A5,Pharmacy ,3336N0007X,"Suppliers/Pharmacy, Nuclear Pharmacy"
+A5,Pharmacy ,3336S0011X,"Suppliers/Pharmacy, Specialty Pharmacy"
+A5,Pharmacy ,1835C0205X,"Suppliers/Pharmacy, Critical Care"
+A5,Pharmacy ,1835P0200X,"Suppliers/Pharmacy, Pediatrics"
+A5,Pharmacy ,1835P1400X,"Suppliers/Pharmacy, Pharmacist/Pain Management"
+A6,Medical Supply Company with Respiratory Therapist,332B00000X,Suppliers/Durable Medical Equipment & Medical Supplies
+A7,Department Store,332B00000X,Suppliers/Durable Medical Equipment & Medical Supplies
+A8,Grocery Store,332B00000X,Suppliers/Durable Medical Equipment & Medical Supplies
+A9[12],Indian Health Service facility[13],332800000X,Suppliers/Indian Health Service/Tribal/Urban Indian Health (I/T/U) Pharmacy
+B1,Oxygen supplier,332BX2000X,"Suppliers/Durable Medical Equipment & Medical Supplies, Oxygen Equipment & Supplies"
+B2,Pedorthic personnel,222Z00000X,"Respiratory, Developmental, Rehabilitative and Restorative Service Providers/Orthotist"
+B2,Pedorthic personnel,224P00000X,"Respiratory, Developmental, Rehabilitative and Restorative Service Providers/Prosthetist"
+B3,Medical supply company with pedorthic personnel,332B00000X,Suppliers/Durable Medical Equipment & Medical Supplies
+B4[14],Rehabilitation Agency,261QR0400X,"Ambulatory Health Care Facilities/Clinic/Center, Rehabilitation"
+B4[14],Organ Procurement Organization,335U00000X,Suppliers/Organ Procurement Organization
+B4[14],Community Mental Health Center,261QM0801X,"Ambulatory Health Care Facilities/Clinic/Center, Mental Health"
+B4[14],Comprehensive Outpatient Rehabilitation Facility,261QR0401X,"Ambulatory Health Care Facilities/Clinic/Center, Rehabilitation, Comprehensive Outpatient Rehabilitation Facility (CORF)"
+B4[14],End-Stage Renal Disease Facility,261QE0700X,Ambulatory Health Care Facilities/End-Stage Renal Disease (ESRD) Treatment
+B4[14],Federally Qualified Health Center,261QF0400X ,Ambulatory Health Care Facilities/Federally Qualified Health Center (FQHC)
+B4[14],Hospice,251G00000X,"Agencies/Hospice Care, Community Based"
+B4[14],Histocompatibility Laboratory,291U00000X,Laboratories/Clinical Medical Laboratory
+B4[14],Histocompatibility Laboratory,291900000X,Laboratories/Military Clinical Medical Laboratory
+B4[14],Outpatient Physical Therapy/Occupational Therapy/Speech Pathology Services ,261QR0400X,"Ambulatory Health Care Facilities/Clinic/Center, Rehabilitation"
+B4[14],Rehabilitation Agency,315D00000X,"Nursing & Custodial Care Facilities/Hospice, Inpatient"
+B4[14],Religious Non-Medical Health Care Institution,282J00000X,Hospitals/Religious Non-medical Health Care Institution
+B4[14],Rural Health Clinic ,261QR1300X,"Ambulatory Health Care Facilities/Clinic/Center, Rural Health"
+B5,Ocularist ,156FX1700X,"Eye and Vision Services Providers, Technician/Technologist, Ocularist"
+C0,Physician/Sleep Medicine,207QS1201X,"Allopathic & Osteopathic Physicians/Family Medicine, Sleep Medicine"
+C0,Physician/Sleep Medicine,207RS0012X,"Allopathic & Osteopathic Physicians/Internal Medicine, Sleep Medicine"
+C0,Physician/Sleep Medicine,207YS0012X,Allopathic & Osteopathic Physicians/Otolaryngology/Sleep Medicine
+C0,Physician/Sleep Medicine,2080S0012X,"Allopathic & Osteopathic Physicians/Pediatrics, Sleep Medicine"
+C0,Physician/Sleep Medicine,2084S0012X,"Allopathic & Osteopathic Physicians/ Psychiatry & Neurology, Sleep Medicine"
+C0,Physician/Sleep Medicine,261QS1200X,Allopathic & Osteopathic Physicians/Ambulatory Health Care Facilities/Sleep Disorder Diagnostic
+C3,Physician/Interventional Cardiology,207RI0011X,"Allopathic & Osteopathic Physicians/Internal Medicine, Interventional Cardiology"
+C5,Dentist,122300000X , Dental Providers/Dentist
+C5,Dentist,1223G0001X,Dental Providers/Dentist/General Practice
+C6,Physician/Hospitalist,208M00000X ,Allopathic & Osteopathic Physicians/Hospitalist
+C7,Physician/Advanced Heart Failure and Transplant Cardiology,207RA0001X ,Allopathic & Osteopathic Physicians/Advanced Heart Failure and Transplant Cardiology
+C8,Physician/Medical Toxicology,207PT0002X,"Allopathic & Osteopathic Physicians/Emergency Medicine, Medical Toxicology"
+C9,Hematopoietic Cell Transplantation and Cellular Therapy,,
+D1,Medicare Diabetes Preventive Program ,174H00000X ,"Other Service Providers, Health Educator"
+D3,Medical Genetics and Genomics ,207SG0201X ,Allopathic & Osteopathic Physicians/Clinical Genetics
+D3,Medical Genetics and Genomics ,207SG0202X,"Allopathic & Osteopathic Physicians, Medical Genetics/Clinical Biochemical Genetics"
+D3,Medical Genetics and Genomics ,207SG0203X,Allopathic & Osteopathic Physicians/ Medical Genetics/Clinical Molecular Genetics
+D3,Medical Genetics and Genomics ,207SG0205X,Allopathic & Osteopathic Physicians/Medical Genetics/Ph.D. Medical Genetics
+D3,Medical Genetics and Genomics ,207SM0001X,Allopathic & Osteopathic Physicians/Medical Genetics/Molecular Genetic Pathology
+D4,Undersea and Hyperbaric Medicine ,207PE0005X ,Allopathic & Osteopathic Physicians/Undersea and Hyperbaric Medicine 
+D5,Opioid Treatment Program ,261QR0405X ,"Ambulatory Health Care Facilities/Clinic/Center, Rehabilitation"
+D6,Home Infusion Therapy Services,3336H0001X,"Suppliers, Pharmacy, Home Infusion Therapy Services"
+D7,Micrographic Dermatologic Surgery,207ND0101X,"Allopathic & Osteopathic Physicians, Dermatology, MOHS-Micrographic Surgery"
+D8,Adult Congenital Heart Disease ,207RA0002X,"Allopathic & Osteopathic Physicians, Internal Medicine"
+E1,Marriage and Family Therapist ,106H00000X,Behavioral Health & Social Service Providers/Marriage and Family Therapist
+E2,Mental Health Counselor ,101YM0800X,Behavioral Health & Social Service Providers/Counselor
+E2,Licensed Professional Counselor,101YP2500X ,Behavioral Health & Social Service Providers/Counselor
