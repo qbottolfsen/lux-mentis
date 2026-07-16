@@ -29,12 +29,18 @@ These observations come from CMS nursing home data current as of June 2026. The 
 | Dataset | Rows | Unique CCNs | Notes |
 |---------|------|-------------|-------|
 | SNF Enrollments | 14,425 | 14,425 | Medicare-certified SNF spine; denominator of record |
-| NH Provider Info | 14,695 | 14,695 | Includes 469 Medicaid-only NFs not in enrollment spine; 199 enrollment-spine facilities absent (hospital-based swing beds, "A"-suffix CCNs, not rated separately) |
-| SNF Cost Report | 14,933 rows | 14,120 | Multiple cost periods per facility; 476 CCNs filed reports but not in current enrollment (closed or changed status) |
-| VBP Scored | 12,901 | 12,901 | 89.4% of enrollment spine; 1,797 facilities excluded on case minimum threshold |
+| NH Provider Info (Care Compare) | 14,695 | 14,695 | +469 Medicaid-only NFs not in Medicare enrollment; −199 hospital-based swing beds (A-suffix CCNs) in enrollment but absent from Care Compare ratings |
+| SNF Cost Report (HCRIS) | 14,933 rows | 14,120 | Multiple cost periods per facility; 13,644 enrolled facilities have a report; **781 enrolled with no cost report**; 476 CCNs filed but no longer in current enrollment |
+| VBP Scored | 12,901 | 12,901 | Reconciled: 12,628 current enrolled + 273 prior-enrollment (scored on prior-year claims, since left current enrollment) = 12,901. 1,797 current enrolled below case minimum. 12,628 + 1,797 = 14,425 ✓ |
 | PAC PUF | 14,161 | 14,161 | Facilities with sufficient Medicare PAC admissions to report |
 
-Staffing findings use the NH Provider Info universe (14,695) because that is where staffing data lives; the 469 extra Medicaid-only NFs are included. Deficiency and penalty rates use the enrollment spine (14,425) as denominator.
+**The accountability finding is not that the counts differ — it is what the gaps mean:**
+
+- **199 Medicare-enrolled SNFs have no Care Compare rating.** A family checking a hospital-based swing bed facility finds nothing — not a low rating, no rating. These facilities are in the federal enrollment database but outside the quality-transparency system.
+- **469 Medicaid-only NFs are on Care Compare but outside the Medicare payment-accountability machinery** — no VBP, no SNF QRP incentive structure, while serving predominantly Medicaid populations.
+- **781 enrolled facilities have no cost report.** Financial stress analysis is structurally unavailable for them.
+
+Staffing findings use the NH Provider Info universe (14,695). Deficiency and penalty rates use the enrollment spine (14,425). See `CORRECTIONS.md` for pending verification items.
 
 ### Value-Based Purchasing
 
