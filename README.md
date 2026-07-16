@@ -30,22 +30,26 @@ These observations come from CMS nursing home data current as of June 2026, cove
 
 ### Staffing
 
-75.5% of SNFs — 10,951 of 14,695 — are not staffing compliant by CMS standards. 22.9% of all SNFs nationally have RN HPRD below 0.4, the threshold CMS has proposed as a minimum. The geographic concentration matters: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its facilities below that level. National average RN HPRD is 0.68. National nurse turnover is 46.1%. *(Level 1)*
+75.5% of SNFs — 10,951 of 14,695 — fall below the threshold in CMS's proposed minimum staffing rule. 22.9% of all SNFs nationally have RN HPRD below 0.4, the specific threshold CMS has proposed as a minimum. The geographic concentration matters: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its facilities below that level. National average RN HPRD is 0.68. National nurse turnover is 46.1%. *(Level 1)*
 
 ### Deficiency Citations
 
-418,479 health citations in the dataset across all active SNFs.
+418,479 health citations across the survey history in CMS Care Compare as of June 2026. The file carries multiple survey cycles per facility; data spans back to 2017 for some facilities, with the most recent surveys through May 2026.
 
-- 9,661 immediate jeopardy (J/K/L) — 4,406 facilities, 30.5% of all SNFs, carry at least one IJ citation on record
-- 31,362 abuse, neglect, or exploitation citations — 9,714 facilities (67.3% of all SNFs) have at least one
-- 31,757 infection control citations
-- 44.4% of all SNFs (6,405 facilities) have been fined at least once; total fines on record: $436 million
+92.2% of all citations are Level 2 — no actual harm, potential above minimal (scope/severity D, E, or F). The remainder by tier:
+
+- **Level 4 — Immediate jeopardy (J/K/L):** 9,661 citations; 4,406 facilities (30.5% of all SNFs) have at least one on record
+- **Level 3 — Actual harm (G/H/I):** 13,426 citations (3.2%)
+- **Abuse, neglect, or exploitation:** 31,362 citations at any severity level across 9,714 facilities; of those, 4,360 reached actual harm or above (G+) affecting 2,746 facilities (19.0% of all SNFs)
+- **Infection control:** 31,757 citations
+
+44.4% of all SNFs (6,405 facilities) have at least one fine on record in CMS penalty data as of June 2026; total on record: $436 million.
 
 Top deficiency categories nationally: Quality of Life and Care (107,576), Resident Rights (64,317), Resident Assessment and Care Planning (60,991). *(Level 1)*
 
-### Five-Star Gradient
+### Five-Star Component Distribution
 
-The relationship between Five-Star rating and every quality metric is monotonic across all five tiers:
+Five-Star is a composite of three domains: health inspection, staffing, and quality measures. The table below shows how the constituent measures of two of those domains distribute across each star tier. These are not independently discovered relationships — citations feed the inspection domain, and RN HPRD and turnover feed the staffing domain. What the table shows is the magnitude of spread across tiers and the absence of any inversion: every measure moves in the same direction across all five levels without exception. *(Level 1)*
 
 | Star | Facilities | Avg citations | RN HPRD | Nurse turnover |
 |------|-----------|---------------|---------|----------------|
@@ -55,7 +59,7 @@ The relationship between Five-Star rating and every quality metric is monotonic 
 | 4 ★ | 2,783 | 19.8 | 0.71 | 43.0% |
 | 5 ★ | 3,045 | 12.8 | 0.95 | 38.2% |
 
-Citations, RN HPRD, and turnover all move together with overall star rating, step by step. The gap between 1-star and 5-star is nearly 4x on citations, nearly 2x on RN HPRD, and 16 percentage points on turnover. *(Level 2 — association)*
+1-star facilities average 47.2 citations and 0.50 RN HPRD. 5-star facilities average 12.8 citations and 0.95 RN HPRD. The gap is nearly 4x on citations and nearly 2x on RN hours per resident day.
 
 ### Financial
 
@@ -64,6 +68,8 @@ National median operating margin: -3.9%. 1,060 facilities with margin below -5%.
 ### State Rankings
 
 Hawaii leads nationally on overall Five-Star at 3.59 (national average: 3.01). Missouri (2.48), Louisiana (2.51), and Illinois (2.56) are at the bottom. Texas has the highest immediate jeopardy citation rate per facility — 1.98 IJ citations per SNF, 2,326 total — and the second-highest penalty dollar total ($58M across 823 facilities). Illinois leads nationally in total fines at $70 million across 472 penalized facilities. Louisiana has 85% of its SNFs below the proposed RN HPRD minimum. *(Level 1)*
+
+**Hawaii: composite rating vs. inspection record.** Hawaii ranks first nationally in overall Five-Star (3.59), driven by a QM star of 4.5 and staffing star of 4.3. Its health inspection star is 2.9 — below the national average of 3.0. Separately, 14.3% of Hawaii's 42 SNFs carry active SFF or SFF Candidate status (1 active, 5 candidates), compared to 3.6% nationally (86 active SFF, 440 candidates). The state with the highest composite rating also carries roughly four times the national SFF concentration. These are not contradictory — the composite blends three domains, and they do not move together here. QM and staffing pull Hawaii's overall star up while the inspection domain lags. The most plausible mechanism is survey frequency: if Hawaii facilities receive more frequent standard surveys within CMS's regional scheduling, each facility accumulates more citation events over any fixed window, which suppresses the inspection star independent of underlying quality. That is a hypothesis, not a confirmed finding. *(Level 3 — plausible mechanism)*
 
 ---
 
