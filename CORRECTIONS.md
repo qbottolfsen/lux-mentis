@@ -31,6 +31,17 @@ what replaced it, why it changed, and the commit where the correction was made.
 
 ---
 
+**2026-07-15 — staffing_compliant threshold confirmed; OBRA hypothesis refuted by data**
+
+- Original phrasing (commit a033120): "not staffing compliant by CMS standards"
+- Corrected phrasing: "fall below the threshold in CMS's proposed minimum staffing rule"
+- Challenge raised: `rn_hprd_compliant` and `total_hprd_compliant` are all null; the correction was written without knowing what threshold `staffing_compliant` actually uses. Hypothesis was that it measures the OBRA 1987 requirement (RN on duty 8 consecutive hours daily, licensed nurse 24/7 — a shift-presence test, not HPRD-based), not the proposed HPRD minimums.
+- Resolution: Data contradicts the OBRA hypothesis. Cross-tabulation shows `staffing_compliant=True` requires `rn_hprd ≥ 0.55` (no True facility has rn_hprd < 0.55; minimum observed is 0.551). Adding `rn_weekend_hprd ≥ 0.55` as a second condition explains 14,681 of 14,695 facilities (99.9%). OBRA does not define HPRD thresholds; this field clearly encodes one. The corrected phrasing is directionally right.
+- Remaining gap: the exact threshold (0.55) and its weekend dimension are derived from data, not confirmed against CMS documentation. README updated to state the threshold explicitly; see also pending item below.
+- Commit: this entry (README updated same commit)
+
+---
+
 ## Pending verification
 
 **RN HPRD — raw vs case-mix adjusted (affects 22.9% finding)**
@@ -47,10 +58,13 @@ what replaced it, why it changed, and the commit where the correction was made.
   meet).
 - Action required: verify against Five-Star Technical Users' Guide before treating 22.9% as final
 
-**rn_hprd_compliant and total_hprd_compliant columns — all null**
-- The NH Provider Info output contains columns `rn_hprd_compliant` and `total_hprd_compliant`
-  (columns 30–31 in the 50-column schema). Both are entirely null in the June 2026 pull.
-- `staffing_compliant` (column 33) is populated: 10,951 False, 3,744 True. It is unclear whether
-  this flag uses the proposed 0.4 RN HPRD threshold, a different threshold, or a composite.
-- Action required: verify against Five-Star Technical Users' Guide what threshold
-  `staffing_compliant` uses and why the individual HPRD compliant columns are null
+**rn_hprd_compliant and total_hprd_compliant columns — all null; staffing_compliant threshold partially resolved**
+- The NH Provider Info output contains `rn_hprd_compliant`, `total_hprd_compliant`, and
+  `rn_weekend_compliant` (columns 30–32). All three are entirely null in the June 2026 pull.
+- `staffing_compliant` (column 33) is populated: 10,951 False, 3,744 True. Data analysis
+  confirms it encodes `(rn_hprd ≥ 0.55) AND (rn_weekend_hprd ≥ 0.55)` — 99.9% match rate.
+- The null individual-component columns (rn_hprd_compliant, total_hprd_compliant) are likely
+  scaffolding for the full proposed rule that was never populated after the rule was vacated.
+  The composite `staffing_compliant` flag continued to be updated; the component flags did not.
+- Remaining action: confirm the 0.55 threshold and weekend requirement against the Five-Star
+  Technical Users' Guide. The data derivation is strong (99.9%) but not documentation-anchored.

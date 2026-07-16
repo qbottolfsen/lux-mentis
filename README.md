@@ -48,7 +48,11 @@ Staffing findings use the NH Provider Info universe (14,695). Deficiency and pen
 
 ### Staffing
 
-74.5% of SNFs — 10,951 of 14,695 — fall below the threshold in CMS's proposed minimum staffing rule. 22.9% of all SNFs nationally have RN HPRD below 0.4, the specific threshold CMS has proposed as a minimum. The geographic concentration matters: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its facilities below that level. National average RN HPRD is 0.68. National nurse turnover is 46.1%. *(Level 1)*
+74.5% of SNFs — 10,951 of 14,695 — have `staffing_compliant=False` in CMS NH Provider Info data. Cross-tabulation against staffing columns confirms this flag encodes a composite: RN HPRD ≥ 0.55 on both weekdays and weekends. Every facility with `staffing_compliant=True` meets both conditions; every facility with `staffing_compliant=False` fails at least one. The 0.55 RN HPRD minimum came from the CMS proposed minimum staffing rule (FR 89:40876, Apr 2024); that rule was vacated in federal litigation in 2025, but CMS continues to publish the compliance flag against it.
+
+A separate, independently computed metric: 22.9% of all SNFs have weekday RN HPRD below 0.4 — a more lenient floor than the 0.55 the compliance flag uses. Both numbers are Level 1 observations from the same source column (`rn_hprd`); they measure different thresholds against different windows.
+
+National average RN HPRD is 0.68. National nurse turnover is 46.1%. Geographic concentration on the 0.55 compliance flag: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its SNFs failing the combined weekday-and-weekend 0.55 RN threshold. *(Level 1 — compliance flag threshold confirmed from data; see [CORRECTIONS.md](CORRECTIONS.md))*
 
 ### Deficiency Citations
 
