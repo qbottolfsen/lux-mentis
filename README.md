@@ -20,6 +20,53 @@ Every finding is assigned an evidence level. Nothing rises above Level 3 by desi
 
 ---
 
+## Findings
+
+These observations come from CMS nursing home data current as of June 2026, covering 14,425 Medicare-certified SNFs nationally. The access layer (Phase 1, where elderly residents are underserved) has a known gap in five states until military installation ZIPs are populated — see Known Limitations. The regulatory and quality findings below are from Phase 2 CMS data, which is nationally complete.
+
+### Value-Based Purchasing
+
+78.6% of SNFs nationally receive a VBP incentive payment penalty (IPM < 1.0). 21.4% receive a bonus. None are neutral. The program intended to reward performance is penalizing nearly four out of five participating facilities. *(Level 1)*
+
+### Staffing
+
+75.5% of SNFs — 10,951 of 14,695 — are not staffing compliant by CMS standards. 22.9% of all SNFs nationally have RN HPRD below 0.4, the threshold CMS has proposed as a minimum. The geographic concentration matters: Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54%. Each has a majority of its facilities below that level. National average RN HPRD is 0.68. National nurse turnover is 46.1%. *(Level 1)*
+
+### Deficiency Citations
+
+418,479 health citations in the dataset across all active SNFs.
+
+- 9,661 immediate jeopardy (J/K/L) — 4,406 facilities, 30.5% of all SNFs, carry at least one IJ citation on record
+- 31,362 abuse, neglect, or exploitation citations — 9,714 facilities (67.3% of all SNFs) have at least one
+- 31,757 infection control citations
+- 44.4% of all SNFs (6,405 facilities) have been fined at least once; total fines on record: $436 million
+
+Top deficiency categories nationally: Quality of Life and Care (107,576), Resident Rights (64,317), Resident Assessment and Care Planning (60,991). *(Level 1)*
+
+### Five-Star Gradient
+
+The relationship between Five-Star rating and every quality metric is monotonic across all five tiers:
+
+| Star | Facilities | Avg citations | RN HPRD | Nurse turnover |
+|------|-----------|---------------|---------|----------------|
+| 1 ★ | 2,873 | 47.2 | 0.50 | 54.9% |
+| 2 ★ | 3,025 | 35.3 | 0.58 | 49.3% |
+| 3 ★ | 2,844 | 26.4 | 0.63 | 46.2% |
+| 4 ★ | 2,783 | 19.8 | 0.71 | 43.0% |
+| 5 ★ | 3,045 | 12.8 | 0.95 | 38.2% |
+
+Citations, RN HPRD, and turnover all move together with overall star rating, step by step. The gap between 1-star and 5-star is nearly 4x on citations, nearly 2x on RN HPRD, and 16 percentage points on turnover. *(Level 2 — association)*
+
+### Financial
+
+National median operating margin: -3.9%. 1,060 facilities with margin below -5%. Most states have a negative median. The states with the weakest median margins are DC, New Hampshire, and Pennsylvania, all near -10%. The industry's cost structure is operating at a loss in most markets. Operating margin figures for CCRCs and hospital-based SNFs are unreliable — see Known Limitations. *(Level 1)*
+
+### State Rankings
+
+Hawaii leads nationally on overall Five-Star at 3.59 (national average: 3.01). Missouri (2.48), Louisiana (2.51), and Illinois (2.56) are at the bottom. Texas has the highest immediate jeopardy citation rate per facility — 1.98 IJ citations per SNF, 2,326 total — and the second-highest penalty dollar total ($58M across 823 facilities). Illinois leads nationally in total fines at $70 million across 472 penalized facilities. Louisiana has 85% of its SNFs below the proposed RN HPRD minimum. *(Level 1)*
+
+---
+
 ## Architecture
 
 Two layers run against the same data environment.
