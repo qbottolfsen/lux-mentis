@@ -1,5 +1,5 @@
 {
-  "comment": "Registry of all datasets in the Lux Mentis pipeline. Used by health_check.py to run structural conformance checks. Do not edit provenance fields by hand \u00e2\u20ac\u201d they are updated by the scripts that produce each output.",
+  "comment": "Registry of all datasets in the Lux Mentis pipeline. Used by health_check.py to run structural conformance checks. Do not edit provenance fields by hand â€” they are updated by the scripts that produce each output.",
   "datasets": [
     {
       "name": "snf_enrollments",
@@ -19,12 +19,12 @@
         {
           "field": "PROVIDER TYPE CODE",
           "check": "constant_value",
-          "reason": "SNF enrollment filter \u2014 all rows are PART A SNF (00-18). Constant by design."
+          "reason": "SNF enrollment filter — all rows are PART A SNF (00-18). Constant by design."
         },
         {
           "field": "PROVIDER TYPE TEXT",
           "check": "constant_value",
-          "reason": "SNF enrollment filter \u2014 all rows are PART A PROVIDER - SKILLED NURSING FACILITY. Constant by design."
+          "reason": "SNF enrollment filter — all rows are PART A PROVIDER - SKILLED NURSING FACILITY. Constant by design."
         },
         {
           "field": "ADDRESS LINE 2",
@@ -35,7 +35,7 @@
     },
     {
       "name": "snf_owners_flags",
-      "label": "SNF Owners \u00e2\u20ac\u201d Facility Flags (public)",
+      "label": "SNF Owners â€” Facility Flags (public)",
       "script": "00_snf_owners_national.py",
       "output_file": "snf_owners_facility_flags.csv",
       "format": "csv",
@@ -55,7 +55,7 @@
     },
     {
       "name": "snf_owners_raw",
-      "label": "SNF Owners \u00e2\u20ac\u201d Raw (gitignored, individual names)",
+      "label": "SNF Owners â€” Raw (gitignored, individual names)",
       "script": "00_snf_owners_national.py",
       "output_file": "snf_owners_national.csv",
       "format": "csv",
@@ -70,7 +70,7 @@
     },
     {
       "name": "pos_iqies",
-      "label": "POS iQIES \u00e2\u20ac\u201d All Provider Types",
+      "label": "POS iQIES â€” All Provider Types",
       "script": "00_pos_iqies_national.py",
       "output_file": "pos_iqies_national.parquet",
       "format": "parquet",
@@ -86,13 +86,13 @@
         {
           "field": "processing_date",
           "check": "constant_value",
-          "reason": "CMS batch processing date \u2014 constant within a vintage pull. Not a data field."
+          "reason": "CMS batch processing date — constant within a vintage pull. Not a data field."
         }
       ]
     },
     {
       "name": "cms_enrollments_all_types",
-      "label": "CMS Enrollments \u00e2\u20ac\u201d All Medicare Provider Types",
+      "label": "CMS Enrollments â€” All Medicare Provider Types",
       "script": "00_cms_enrollments_all_types.py",
       "output_file": "cms_enrollments_all_types.csv",
       "format": "csv",
@@ -109,7 +109,7 @@
     },
     {
       "name": "facility_master",
-      "label": "Facility Master \u00e2\u20ac\u201d Spine with Geography",
+      "label": "Facility Master â€” Spine with Geography",
       "script": "00_facility_master_national.py",
       "output_file": "facility_master_national.csv",
       "format": "csv",
@@ -128,12 +128,12 @@
         {
           "field": "processing_date",
           "check": "constant_value",
-          "reason": "CMS batch processing date \u2014 constant within a vintage pull."
+          "reason": "CMS batch processing date — constant within a vintage pull."
         },
         {
           "field": "acs_year",
           "check": "constant_value",
-          "reason": "Census vintage label \u2014 constant across the ZCTA join (2024-5yr). Expected."
+          "reason": "Census vintage label — constant across the ZCTA join (2024-5yr). Expected."
         }
       ]
     },
@@ -151,7 +151,7 @@
       "gitignored": true,
       "fields_computed": [],
       "known_findings": [],
-      "note": "OIG exclusions list \u00e2\u20ac\u201d individual names, DOBs. Role-gated. Never public."
+      "note": "OIG exclusions list â€” individual names, DOBs. Role-gated. Never public."
     },
     {
       "name": "census_demographics",
@@ -171,7 +171,7 @@
         {
           "field": "acs_year",
           "check": "constant_value",
-          "reason": "Census vintage label \u2014 constant for a single ACS pull. Expected."
+          "reason": "Census vintage label — constant for a single ACS pull. Expected."
         }
       ]
     },
@@ -189,12 +189,12 @@
       "gitignored": false,
       "fields_computed": [],
       "known_findings": [
-        "staffing_compliant_74pct",
+        "staffing_compliant_pending_87pct",
         "rn_hprd_22pct",
         "turnover_46pct",
         "sff_concentration"
       ],
-      "schema_note": "CMS-3442-F compliance flags: rn_hprd_compliant, total_hprd_compliant, rn_weekend_compliant all null post-vacatur; staffing_compliant still updated",
+      "schema_note": "CMS-3442-F compliance flags computed by script; staffing_compliant=False for 74.5% in current CSV (PENDING regeneration — script threshold was corrected). See CORRECTIONS.md.",
       "known_anomalies": [
         {
           "field": "special_focus_status",
@@ -204,37 +204,42 @@
         {
           "field": "special_focus_candidate_status",
           "check": "null_rate",
-          "reason": "Same as special_focus_status \u00e2\u20ac\u201d expected sparsity."
+          "reason": "Same as special_focus_status â€” expected sparsity."
         },
         {
           "field": "rn_hprd_compliant",
           "check": "type_anomaly",
-          "reason": "Boolean field (True/False string) \u00e2\u20ac\u201d numeric hint heuristic is a false positive. Field is 100% null post-CMS-3442-F vacatur. Documented in CORRECTIONS.md."
+          "reason": "Boolean field (True/False string) — numeric hint heuristic (_hprd) is a false positive. Computed by script from HPRD values; True/False strings are not parseable as numeric. Documented in CORRECTIONS.md."
         },
         {
           "field": "total_hprd_compliant",
           "check": "type_anomaly",
-          "reason": "Boolean field (True/False string) \u00e2\u20ac\u201d numeric hint heuristic is a false positive. Field is 100% null post-CMS-3442-F vacatur. Documented in CORRECTIONS.md."
+          "reason": "Boolean field (True/False string) — numeric hint heuristic (_hprd) is a false positive. Computed by script from HPRD values; True/False strings are not parseable as numeric. Documented in CORRECTIONS.md."
         },
         {
           "field": "rn_weekend_compliant",
           "check": "type_anomaly",
-          "reason": "Boolean field (True/False string) \u00e2\u20ac\u201d numeric hint heuristic is a false positive. Field is 100% null post-CMS-3442-F vacatur. Documented in CORRECTIONS.md."
+          "reason": "Boolean field (True/False string) — numeric hint heuristic (_hprd) is a false positive. Computed by script from HPRD values; True/False strings are not parseable as numeric. Documented in CORRECTIONS.md."
         },
         {
           "field": "rn_hprd_compliant",
           "check": "null_rate",
-          "reason": "CMS-3442-F vacated 2025; CMS stopped populating this component flag. Expected all-null. Documented in CORRECTIONS.md."
+          "reason": "Null in current output CSV — CSV was generated by an earlier script version before these fields were computed. Will be non-null (True/False) after regeneration; this null_rate suppression becomes vacuous post-regeneration."
         },
         {
           "field": "total_hprd_compliant",
           "check": "null_rate",
-          "reason": "CMS-3442-F vacated 2025; CMS stopped populating this component flag. Expected all-null. Documented in CORRECTIONS.md."
+          "reason": "Same as rn_hprd_compliant null_rate — null in current CSV, will be non-null after regeneration."
         },
         {
           "field": "rn_weekend_compliant",
           "check": "null_rate",
-          "reason": "CMS-3442-F vacated 2025; CMS stopped populating this component flag. Expected all-null. Documented in CORRECTIONS.md."
+          "reason": "Same as rn_hprd_compliant null_rate — null in current CSV, will be non-null after regeneration."
+        },
+        {
+          "field": "aide_hprd_compliant",
+          "check": "type_anomaly",
+          "reason": "Boolean field (True/False string) — numeric hint heuristic (_hprd) is a false positive. Computed by script from cna_hprd >= 2.45 (CMS-3442-F nurse aide minimum). New field added by threshold correction; not in current output CSV until regenerated."
         }
       ]
     },
@@ -298,7 +303,7 @@
         {
           "field": "is_abuse_neglect",
           "check": "constant_value",
-          "reason": "Fire deficiency file does not carry abuse/neglect categorization \u2014 those tags only appear in health deficiency surveys. Always False in this file by design."
+          "reason": "Fire deficiency file does not carry abuse/neglect categorization — those tags only appear in health deficiency surveys. Always False in this file by design."
         },
         {
           "field": "is_infection_ctrl_cat",
@@ -349,7 +354,7 @@
     },
     {
       "name": "nh_penalties_by_facility",
-      "label": "NH Penalties \u00e2\u20ac\u201d Facility Aggregates",
+      "label": "NH Penalties â€” Facility Aggregates",
       "script": "03_nh_penalties_national.py",
       "output_file": "nh_penalties_by_facility.csv",
       "format": "csv",
@@ -367,7 +372,7 @@
     },
     {
       "name": "nh_mds_qm",
-      "label": "NH Quality Measures \u00e2\u20ac\u201d MDS-Based",
+      "label": "NH Quality Measures â€” MDS-Based",
       "script": "04_nh_quality_measures_national.py",
       "output_file": "nh_mds_qm_national.parquet",
       "format": "parquet",
@@ -383,13 +388,13 @@
         {
           "field": "used_in_five_star",
           "check": "null_rate",
-          "reason": "CMS provides a flag indicating whether the MDS measure is a Five-Star input, but has not populated it. 100% null. CMS abandoned field \u2014 document in methods note as undocumented behavioral decision."
+          "reason": "CMS provides a flag indicating whether the MDS measure is a Five-Star input, but has not populated it. 100% null. CMS abandoned field — document in methods note as undocumented behavioral decision."
         }
       ]
     },
     {
       "name": "nh_claims_qm",
-      "label": "NH Quality Measures \u00e2\u20ac\u201d Claims-Based",
+      "label": "NH Quality Measures â€” Claims-Based",
       "script": "04_nh_quality_measures_national.py",
       "output_file": "nh_claims_qm_national.parquet",
       "format": "parquet",
@@ -442,7 +447,7 @@
         {
           "field": "collection_through",
           "check": "null_rate",
-          "reason": "Same as collection_from \u2014 CMS abandoned field in QRP dataset."
+          "reason": "Same as collection_from — CMS abandoned field in QRP dataset."
         }
       ]
     },
@@ -477,17 +482,17 @@
       "gitignored": false,
       "fields_computed": [],
       "known_findings": [],
-      "note": "Pulled with SMRY_CTGRY=PROVIDER filter. Full UUID contains IRF, LTACH, HHA rows \u00e2\u20ac\u201d re-pull without filter for Phase 3.",
+      "note": "Pulled with SMRY_CTGRY=PROVIDER filter. Full UUID contains IRF, LTACH, HHA rows â€” re-pull without filter for Phase 3.",
       "known_anomalies": [
         {
           "field": "YEAR",
           "check": "constant_value",
-          "reason": "PAC PUF vintage year (2023) \u2014 constant within a single-vintage pull."
+          "reason": "PAC PUF vintage year (2023) — constant within a single-vintage pull."
         },
         {
           "field": "YEAR_TYPE",
           "check": "constant_value",
-          "reason": "PAC PUF year type (FY) \u2014 constant field indicating fiscal year vintage."
+          "reason": "PAC PUF year type (FY) — constant field indicating fiscal year vintage."
         },
         {
           "field": "SMRY_CTGRY",
@@ -607,7 +612,7 @@
         {
           "field": "high_therapy_intensity",
           "check": "null_rate",
-          "reason": "CMS provides this field but has not populated it in recent PAC PUF vintages. 100% null. CMS abandoned field \u2014 document in methods note."
+          "reason": "CMS provides this field but has not populated it in recent PAC PUF vintages. 100% null. CMS abandoned field — document in methods note."
         }
       ]
     },
@@ -652,7 +657,7 @@
         {
           "field": "count_of_automatic_sprinkler_systems_deficiencies",
           "check": "constant_value",
-          "reason": "Fire safety subcategory counts in the health survey summary are zero \u2014 fire citations are tracked in the separate fire safety dataset, not in health survey summary."
+          "reason": "Fire safety subcategory counts in the health survey summary are zero — fire citations are tracked in the separate fire safety dataset, not in health survey summary."
         },
         {
           "field": "count_of_corridor_walls_and_doors_deficiencies",
@@ -732,7 +737,7 @@
     },
     {
       "name": "reference_measure_intervals",
-      "label": "QM Measure Code \u00e2\u20ac\u201d Collection Period Reference",
+      "label": "QM Measure Code â€” Collection Period Reference",
       "script": "reference_measure_intervals.py",
       "output_file": "reference_measure_intervals.csv",
       "format": "csv",

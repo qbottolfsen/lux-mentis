@@ -306,7 +306,7 @@ def main():
     parser.add_argument("--dataset", help="Run against a single dataset by name")
     args = parser.parse_args()
 
-    with open(REGISTRY) as f:
+    with open(REGISTRY, encoding="utf-8") as f:
         registry = json.load(f)
 
     datasets = registry["datasets"]
@@ -322,9 +322,10 @@ def main():
         "results": [],
     }
 
-    blocking_total = 0
-    latent_total   = 0
-    info_total     = 0
+    blocking_total   = 0
+    latent_total     = 0
+    info_total       = 0
+    suppressed_total = 0
 
     print(f"\n{'='*70}")
     print(f"  LUX MENTIS CONFORMANCE HARNESS")
@@ -343,11 +344,16 @@ def main():
         l_count = sum(1 for d in divs if d.get("severity") == "LATENT")
         i_count = sum(1 for d in divs if d.get("severity") == "INFO")
 
+        s_count = len(build_known_set(ds))
+        suppressed_total += s_count
+
         row_info = ""
         if result["row_count"] is not None:
             row_info = f"  {result['row_count']:>8,} rows  {result['col_count']:>4} cols"
 
-        print(f"{status_sym} {ds['name']:<35}{row_info}")
+        supp_info = f"  [suppressed:{s_count:>3}]" if s_count > 0 else ""
+
+        print(f"{status_sym} {ds['name']:<35}{row_info}{supp_info}")
 
         if divs:
             blocking_total += b_count
@@ -360,7 +366,7 @@ def main():
                 print(f"{sym} {d['message']}")
 
     print(f"\n{'='*70}")
-    print(f"  SUMMARY:  BLOCKING={blocking_total}  LATENT={latent_total}  INFO={info_total}")
+    print(f"  SUMMARY:  BLOCKING={blocking_total}  LATENT={latent_total}  INFO={info_total}  SUPPRESSED={suppressed_total}")
     print(f"  Report written to: {REPORT_FILE.name}")
     print(f"{'='*70}\n")
 
