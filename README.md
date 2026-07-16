@@ -22,7 +22,19 @@ Every finding is assigned an evidence level. Nothing rises above Level 3 by desi
 
 ## Findings
 
-These observations come from CMS nursing home data current as of June 2026, covering 14,425 Medicare-certified SNFs nationally. The access layer (Phase 1, where elderly residents are underserved) has a known gap in five states until military installation ZIPs are populated — see Known Limitations. The regulatory and quality findings below are from Phase 2 CMS data, which is nationally complete.
+These observations come from CMS nursing home data current as of June 2026. The access layer (Phase 1, where elderly residents are underserved) has a known gap in five states until military installation ZIPs are populated — see Known Limitations. The regulatory and quality findings below are from Phase 2 CMS data, which is nationally complete.
+
+**Universe note.** Five datasets cover different facility populations. The Medicare enrollment spine (14,425 facilities) is the declared denominator of record for percentage claims unless noted otherwise.
+
+| Dataset | Rows | Unique CCNs | Notes |
+|---------|------|-------------|-------|
+| SNF Enrollments | 14,425 | 14,425 | Medicare-certified SNF spine; denominator of record |
+| NH Provider Info | 14,695 | 14,695 | Includes 469 Medicaid-only NFs not in enrollment spine; 199 enrollment-spine facilities absent (hospital-based swing beds, "A"-suffix CCNs, not rated separately) |
+| SNF Cost Report | 14,933 rows | 14,120 | Multiple cost periods per facility; 476 CCNs filed reports but not in current enrollment (closed or changed status) |
+| VBP Scored | 12,901 | 12,901 | 89.4% of enrollment spine; 1,797 facilities excluded on case minimum threshold |
+| PAC PUF | 14,161 | 14,161 | Facilities with sufficient Medicare PAC admissions to report |
+
+Staffing findings use the NH Provider Info universe (14,695) because that is where staffing data lives; the 469 extra Medicaid-only NFs are included. Deficiency and penalty rates use the enrollment spine (14,425) as denominator.
 
 ### Value-Based Purchasing
 
