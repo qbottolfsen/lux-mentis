@@ -29,8 +29,6 @@ what replaced it, why it changed, and the commit where the correction was made.
   correlating with its own inputs is arithmetic, not association
 - Commit: 74c7de6
 
----
-
 **2026-07-15 — staffing_compliant threshold confirmed; OBRA hypothesis refuted by data**
 
 - Original phrasing (commit a033120): "not staffing compliant by CMS standards"
@@ -38,7 +36,7 @@ what replaced it, why it changed, and the commit where the correction was made.
 - Challenge raised: `rn_hprd_compliant` and `total_hprd_compliant` are all null; the correction was written without knowing what threshold `staffing_compliant` actually uses. Hypothesis was that it measures the OBRA 1987 requirement (RN on duty 8 consecutive hours daily, licensed nurse 24/7 — a shift-presence test, not HPRD-based), not the proposed HPRD minimums.
 - Resolution: Data contradicts the OBRA hypothesis. Cross-tabulation shows `staffing_compliant=True` requires `rn_hprd ≥ 0.55` (no True facility has rn_hprd < 0.55; minimum observed is 0.551). Adding `rn_weekend_hprd ≥ 0.55` as a second condition explains 14,681 of 14,695 facilities (99.9%). OBRA does not define HPRD thresholds; this field clearly encodes one. The corrected phrasing is directionally right.
 - Remaining gap: the exact threshold (0.55) and its weekend dimension are derived from data, not confirmed against CMS documentation. README updated to state the threshold explicitly; see also pending item below.
-- Commit: this entry (README updated same commit)
+- Commit: c43b9b9
 
 ---
 
