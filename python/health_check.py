@@ -7,11 +7,22 @@ Runs seven structural checks against each output file and its current API schema
   1. Fields in API response absent from our output (data we never captured)
   2. Fields in our output absent from the current API (CMS renamed or dropped)
   3. Type anomalies — columns that should be numeric but read back as all-string
-  4. Null-rate anomalies — any field >= 95% null (would have caught rn_hprd_compliant)
+  4. Null-rate anomalies — any field >= 95% null
   5. Constant-value fields — any field with exactly 1 distinct non-null value
   6. Column-name divergence — same logical field, different name across access methods
      (requires two access paths to the same dataset; logged when known)
   7. Row-count drift — current output vs. the registered assertion range
+
+A4 Column-Binding Note (audit 2026-07-16):
+  Scripts 02–10 use find_col() for column discovery. On a CMS column rename, find_col()
+  returns None, g() returns "" silently, and the output carries empty strings throughout
+  the affected column. The script prints "NOT FOUND" in the terminal but does not abort.
+  Script 01 uses an explicit SRC dict — mismatches raise a KeyError during fetch.
+  Risk: finding fields in scripts 02–10 (scope_severity_code, fine_amount, etc.) can
+  silently empty-out if CMS renames a raw column.
+  Mitigation: run `health_check.py --live` after each vintage pull BEFORE generating
+  output. Checks 1+2 surface field-set divergences upstream. Post-generation, the
+  null_rate check (check 4) catches silent empties as BLOCKING on finding fields.
 
 Outputs:
   output_reference/divergence_report.json   — machine-readable; committed to repo
@@ -51,7 +62,7 @@ CONST_VALUE_MIN_ROWS  = 100    # only flag constant-value on datasets > 100 rows
 
 # Published findings — maps dataset name to field names that feed a finding
 FINDING_FIELDS = {
-    "nh_provider_info":    ["staffing_compliant", "rn_hprd", "rn_weekend_hprd", "total_hprd",
+    "nh_provider_info":    ["meets_3442f_thresholds", "rn_hprd", "rn_weekend_hprd", "total_hprd",
                             "total_nurse_turnover", "rn_turnover", "overall_star",
                             "health_inspection_star", "staffing_star", "special_focus_status",
                             "special_focus_candidate_status"],

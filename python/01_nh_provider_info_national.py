@@ -19,12 +19,12 @@ Contains the following, pre-aggregated from their source datasets by CMS:
   Geography:          Lat/lon, county, urban/rural
   Acuity:             Nursing case-mix index
 
-Compliance flags (CMS-3442-F Final Rule, Jun 2024):
-  rn_hprd_compliant       True if reported RN HPRD >= 0.55
-  aide_hprd_compliant     True if reported Nurse Aide (CNA) HPRD >= 2.45
-  total_hprd_compliant    True if reported Total Nurse HPRD >= 3.48
-  rn_weekend_compliant    True if Weekend RN HPRD >= 0.55
-  staffing_compliant      True if all four met
+CMS-3442-F threshold flags (counterfactual — rule repealed Dec 2025):
+  rn_meets_3442f          True if reported RN HPRD >= 0.55
+  aide_meets_3442f        True if reported Nurse Aide (CNA) HPRD >= 2.45
+  total_meets_3442f       True if reported Total Nurse HPRD >= 3.48
+  rn_weekend_meets_3442f  True if Weekend RN HPRD >= 0.55
+  meets_3442f_thresholds  True if all four met
 
 Output: output_reference/nh_provider_info_national.csv
 
@@ -235,11 +235,11 @@ for r in all_rows:
         "total_weekend_hprd":         g(r, "total_weekend_hprd"),
         "casemix_index":              g(r, "casemix_index"),
         # Compliance flags (CMS-3442-F)
-        "rn_hprd_compliant":          "" if rn_ok         is None else str(rn_ok),
-        "aide_hprd_compliant":        "" if cna_ok        is None else str(cna_ok),
-        "total_hprd_compliant":       "" if total_ok      is None else str(total_ok),
-        "rn_weekend_compliant":       "" if rn_weekend_ok is None else str(rn_weekend_ok),
-        "staffing_compliant":         str(all_ok),
+        "rn_meets_3442f":             "" if rn_ok         is None else str(rn_ok),
+        "aide_meets_3442f":           "" if cna_ok        is None else str(cna_ok),
+        "total_meets_3442f":          "" if total_ok      is None else str(total_ok),
+        "rn_weekend_meets_3442f":     "" if rn_weekend_ok is None else str(rn_weekend_ok),
+        "meets_3442f_thresholds":     str(all_ok),
         # Turnover
         "total_nurse_turnover":       g(r, "total_turnover"),
         "rn_turnover":                g(r, "rn_turnover"),
@@ -285,12 +285,12 @@ if rated_pct < 0.80:
     raise AssertionError(f"FAILED: only {rated_pct:.1%} have overall rating")
 print(f"  PASS: {rated_pct:.1%} of facilities have overall rating ({rated:,})")
 
-rn_compliant   = (df["rn_hprd_compliant"]    == "True").sum()
-tot_compliant  = (df["total_hprd_compliant"] == "True").sum()
-both_compliant = (df["staffing_compliant"]   == "True").sum()
-print(f"  INFO: RN HPRD >= 0.55:    {rn_compliant:,} ({rn_compliant/total:.1%})")
-print(f"  INFO: Total HPRD >= 2.45: {tot_compliant:,} ({tot_compliant/total:.1%})")
-print(f"  INFO: CMS-3442-F fully compliant: {both_compliant:,} ({both_compliant/total:.1%})")
+rn_above    = (df["rn_meets_3442f"]         == "True").sum()
+tot_above   = (df["total_meets_3442f"]      == "True").sum()
+all_above   = (df["meets_3442f_thresholds"] == "True").sum()
+print(f"  INFO: RN HPRD >= 0.55 (3442-F threshold):          {rn_above:,} ({rn_above/total:.1%})")
+print(f"  INFO: Total HPRD >= 3.48 (3442-F threshold):       {tot_above:,} ({tot_above/total:.1%})")
+print(f"  INFO: Meets all 3442-F thresholds (counterfactual): {all_above:,} ({all_above/total:.1%})")
 
 
 # ── Summary ────────────────────────────────────────────────────────────────────
@@ -319,7 +319,7 @@ print(f"  Chain Affiliated:         {chain_count:,} ({chain_count/total:.1%})")
 
 print()
 hi_display = hi[["ccn", "provider_name", "overall_star", "rn_hprd",
-                  "total_hprd", "rn_hprd_compliant", "staffing_compliant",
+                  "total_hprd", "rn_meets_3442f", "meets_3442f_thresholds",
                   "special_focus_status", "abuse_icon"]].copy()
 hi_display = hi_display.sort_values("overall_star", ascending=False)
 print(f"Hawaii facilities (n={len(hi)}):")

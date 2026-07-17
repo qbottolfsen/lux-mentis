@@ -34,10 +34,11 @@ what replaced it, why it changed, and the commit where the correction was made.
 - Original phrasing (commit a033120): "not staffing compliant by CMS standards"
 - First correction (commit c43b9b9): two-condition model (rn_hprd ≥ 0.55 AND rn_weekend_hprd ≥ 0.55); flagged as derived from data
 - Second correction (commit 7f30b75): two-condition model was incomplete — added a third condition (total nurse HPRD ≥ 2.45) that resolved the ~14 residuals. Zero exceptions across all 14,695 facilities. *This second correction was itself wrong — see third correction below.*
-- **Third correction (commit b963512 — BLOCKING):** The "Total Nurse HPRD ≥ 2.45" described in the second correction misidentifies both the field and the value. Per CMS-3442-F: 2.45 is the *nurse aide (CNA)* minimum and is applied to `cna_hprd`; the *total nurse* minimum is 3.48, applied to `total_hprd`. The script set `TOTAL_HPRD_MIN = 2.45` and applied it to `total_hprd` (RN+LPN+CNA) — the aide threshold on the wrong field — and never tested `cna_hprd` at all. The formula fit the data perfectly because it was circular: the script computed the flag with its own constants, then cross-validated the flag against those same constants. Under the rule's actual four-part formula (rn ≥ 0.55, weekend_rn ≥ 0.55, aide ≥ 2.45, total ≥ 3.48): **12,868 of 14,695 facilities fail — 87.6%.** 1,917 facilities that currently pass the prior formula would fail under this one.
-- **Documentation check closed the open questions:** (1) HPRD basis: CMS-3442-F rule text says thresholds are "implemented and enforced independent of a facility's case-mix." Script SRC dict comment: "reported = direct PBJ count, not case-mix adjusted." `reported_*` fields are confirmed unadjusted; basis is correct. (2) The "gap" premise was wrong: `staffing_compliant` is not a CMS-published API field — it is entirely computed by our script. Reading the SRC dict confirms no compliance flag is read from the API. "74.5% is a floor relative to CMS's published flag" was a false framing; there is no CMS flag to compare against. The gap between 74.5% and 87.6% is old formula (aide threshold applied to total field) vs. corrected formula. (3) Rule status: Public Law 119-21 (Jul 2025) prohibited enforcement; CMS Federal Register Dec 2025 formally repealed the rule. Our June 2026 data is post-repeal; no federal minimum staffing standards are in force. The 87.6% measures compliance with the final-state thresholds as a policy reference point — valid analysis, but the thresholds were never fully in effect (Phase 3, requiring all four minimums, was scheduled for 2027–2029).
-- Status: script corrected; 87.6% publishes after output CSV is regenerated. README PENDING flag removed pending regeneration.
-- Commits: c43b9b9 (first), 7f30b75 (second — incomplete), b963512 (third — formula corrected), this commit (fifth — closes documentation questions)
+- **Third correction (commit b963512 — BLOCKING):** The "Total Nurse HPRD ≥ 2.45" described in the second correction misidentifies both the field and the value. Per CMS-3442-F: 2.45 is the *nurse aide (CNA)* minimum and is applied to `cna_hprd`; the *total nurse* minimum is 3.48, applied to `total_hprd`. The script set `TOTAL_HPRD_MIN = 2.45` and applied it to `total_hprd` (RN+LPN+CNA) — the aide threshold on the wrong field — and never tested `cna_hprd` at all. The formula fit the data perfectly because it was circular: the script computed the flag with its own constants, then cross-validated the flag against those same constants. Under the rule's actual four-part formula (rn ≥ 0.55, weekend_rn ≥ 0.55, aide ≥ 2.45, total ≥ 3.48): **87.6% (12,868 of 14,695) would not have met the final-state thresholds.** 1,917 facilities that cleared the prior formula's wrong test would fail the corrected one.
+- **Documentation check closed the open questions:** (1) HPRD basis: CMS-3442-F rule text says thresholds are "implemented and enforced independent of a facility's case-mix." Script SRC dict comment: "reported = direct PBJ count, not case-mix adjusted." `reported_*` fields are confirmed unadjusted; basis is correct. (2) The "gap" premise was wrong: `meets_3442f_thresholds` is not a CMS-published API field — it is entirely computed by this pipeline. Reading the SRC dict confirms no compliance flag is read from the API. CMS does not publish a staffing compliance determination in the NH Provider Info API; the field did briefly appear on the Care Compare website during Phase 1 enforcement (2024–2025), but never as an API value, and it is no longer displayed post-repeal. "74.5% is a floor relative to CMS's published flag" was a false framing; there is no CMS flag to compare against. The gap between 74.5% and 87.6% is old formula vs. corrected formula. (3) Rule status: Public Law 119-21 (Jul 2025) prohibited enforcement; CMS Federal Register Dec 2025 formally repealed the rule. Our June 2026 data is post-repeal. The 87.6% is a counterfactual — it describes the staffing landscape against thresholds that were repealed before they fully took effect.
+- **Field rename (this commit):** `staffing_compliant` renamed to `meets_3442f_thresholds`; component flags renamed from `*_compliant` to `*_meets_3442f` pattern. The old names asserted regulatory non-compliance with a repealed rule. The new names describe the computation.
+- Status: script corrected and field names corrected; 87.6% counterfactual publishes after output CSV is regenerated.
+- Commits: c43b9b9 (first), 7f30b75 (second — incomplete), b963512 (third — formula corrected), 7f25892 (fourth — HPRD basis closed), this commit (fifth — field rename; counterfactual reframe)
 
 ---
 
@@ -57,13 +58,13 @@ what replaced it, why it changed, and the commit where the correction was made.
   meet).
 - Action required: verify against Five-Star Technical Users' Guide before treating 22.9% as final
 
-**rn_hprd_compliant and total_hprd_compliant columns — all null; RESOLVED**
-- The NH Provider Info output contains `rn_hprd_compliant`, `total_hprd_compliant`, and
-  `rn_weekend_compliant` (columns 30–32). All three are entirely null in the June 2026 pull.
-- Explanation confirmed: CMS-3442-F was vacated in 2025. CMS stopped populating the individual
-  component compliance flags after the vacatur but has continued updating the composite
-  `staffing_compliant` field. The null fields are regulatory history frozen at the point of
-  vacatur; they are not data errors.
-- `staffing_compliant` (column 33) is populated: 10,951 False, 3,744 True. Three-condition
-  definition confirmed from CMS-3442-F and cross-validated against all 14,695 rows.
-- Resolved. No further action required on null columns.
+**rn_meets_3442f and total_meets_3442f columns — all null in current CSV; RESOLVED**
+- The NH Provider Info output (prior to regeneration) contains `rn_meets_3442f`, `total_meets_3442f`,
+  and `rn_weekend_meets_3442f` as entirely null. (Formerly named `rn_hprd_compliant` etc. — renamed
+  this session; see staffing correction above.)
+- Explanation confirmed: these fields did not exist in earlier script versions that produced the
+  current CSV. They are computed fields added during the threshold correction; they will be
+  non-null (True/False) after the output is regenerated.
+- `meets_3442f_thresholds` (the composite) is populated in the current CSV with the old formula's
+  values (10,951 False, 3,744 True) — those values are superseded by the corrected formula.
+- Resolved as a null issue. Values will be correct after CSV regeneration.
