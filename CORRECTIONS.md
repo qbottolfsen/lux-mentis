@@ -44,19 +44,17 @@ what replaced it, why it changed, and the commit where the correction was made.
 
 ## Pending verification
 
-**RN HPRD — raw vs case-mix adjusted (affects 22.9% finding)**
+**RN HPRD — raw vs case-mix adjusted (affects 22.9% finding) — RESOLVED**
 - Published: "22.9% of all SNFs nationally have RN HPRD below 0.4, the threshold CMS has proposed
   as a minimum"
-- Issue: CMS's proposed minimum staffing thresholds are specified in *unadjusted* hours per
-  resident day. The `rn_hprd` column in NH Provider Info is labeled "hours per resident day" but
-  does not specify whether case-mix adjustment has been applied. The pipeline value (national mean
-  0.680) is consistent with CMS's published unadjusted national average, suggesting raw HPRD —
-  but this has not been verified against the Five-Star Technical Users' Guide.
-- Risk: if `rn_hprd` is case-mix adjusted and the 0.4 threshold is unadjusted, the 22.9% figure
-  compares two different measures. The direction of error would be that we understate the
-  non-compliance rate (adjusted HPRD is typically lower than raw, making the threshold harder to
-  meet).
-- Action required: verify against Five-Star Technical Users' Guide before treating 22.9% as final
+- Resolved: Script 01 SRC dict maps `rn_hprd` to the explicit CMS column name
+  `reported_rn_staffing_hours_per_resident_per_day` (line 88). The script comment states
+  "reported = direct PBJ count, not case-mix adjusted." The CMS-3442-F rule text confirms
+  thresholds apply "independent of a facility's case-mix." Three concordant sources (explicit
+  column binding, script comment, rule text) establish that `rn_hprd` is unadjusted PBJ HPRD.
+  The 22.9% figure compares two unadjusted values. No further verification required.
+- Note: script 01 uses an explicit SRC dict, not find_col(). The A4 fix to find_col() does not
+  affect this binding.
 
 **rn_meets_3442f and total_meets_3442f columns — all null in current CSV; RESOLVED**
 - The NH Provider Info output (prior to regeneration) contains `rn_meets_3442f`, `total_meets_3442f`,
