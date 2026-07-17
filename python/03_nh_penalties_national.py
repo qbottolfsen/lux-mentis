@@ -80,27 +80,32 @@ print(f"Columns ({len(raw_cols)}): {raw_cols}")
 print()
 
 
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
 COL = {
-    "ccn":           find_col(raw_cols, "cms_certification_number") or find_col(raw_cols, "ccn"),
+    "ccn":           find_col(raw_cols, "cms_certification_number", required=False) or find_col(raw_cols, "ccn"),
     "name":          find_col(raw_cols, "provider_name"),
     "state":         find_col(raw_cols, "state"),
-    "city":          find_col(raw_cols, "city") or find_col(raw_cols, "citytown"),
-    "zip":           find_col(raw_cols, "zip"),
+    "city":          find_col(raw_cols, "city", required=False) or find_col(raw_cols, "citytown", required=False),
+    "zip":           find_col(raw_cols, "zip", required=False),
     "penalty_date":  find_col(raw_cols, "penalty_date"),
     "penalty_type":  find_col(raw_cols, "penalty_type"),
-    "fine_id":       find_col(raw_cols, "fine_id"),
+    "fine_id":       find_col(raw_cols, "fine_id", required=False),
     "fine_amount":   find_col(raw_cols, "fine_amount"),
-    "denial_start":  find_col(raw_cols, "payment_denial_start") or find_col(raw_cols, "denial_start"),
-    "denial_days":   find_col(raw_cols, "payment_denial_length") or find_col(raw_cols, "denial_length"),
+    "denial_start":  find_col(raw_cols, "payment_denial_start", required=False) or find_col(raw_cols, "denial_start", required=False),
+    "denial_days":   find_col(raw_cols, "payment_denial_length", required=False) or find_col(raw_cols, "denial_length", required=False),
 }
 
 print("Column mapping:")

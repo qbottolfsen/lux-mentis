@@ -91,40 +91,45 @@ print(f"Columns ({len(raw_cols)}): {raw_cols[:8]} ...")
 print()
 
 # Find columns by case-insensitive substring
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 COL = {
-    "prvdr_id":       find_col(raw_cols, "prvdr_id") or find_col(raw_cols, "provider_id"),
-    "prvdr_name":     find_col(raw_cols, "prvdr_name") or find_col(raw_cols, "provider_name"),
+    "prvdr_id":       find_col(raw_cols, "prvdr_id", required=False) or find_col(raw_cols, "provider_id"),
+    "prvdr_name":     find_col(raw_cols, "prvdr_name", required=False) or find_col(raw_cols, "provider_name", required=False),
     "state":          find_col(raw_cols, "state"),
     "smry_ctgry":     find_col(raw_cols, "smry_ctgry"),
     "srvc_ctgry":     find_col(raw_cols, "srvc_ctgry"),
-    "year":           find_col(raw_cols, "year") or find_col(raw_cols, "yr"),
-    # Therapy intensity
-    "pt_mnts":        find_col(raw_cols, "pt_mnts") or find_col(raw_cols, "tot_pt"),
-    "ot_mnts":        find_col(raw_cols, "ot_mnts") or find_col(raw_cols, "tot_ot"),
-    "slp_mnts":       find_col(raw_cols, "slp_mnts") or find_col(raw_cols, "tot_slp"),
+    "year":           find_col(raw_cols, "year", required=False) or find_col(raw_cols, "yr"),
+    # Therapy intensity (optional enrichment)
+    "pt_mnts":        find_col(raw_cols, "pt_mnts", required=False) or find_col(raw_cols, "tot_pt", required=False),
+    "ot_mnts":        find_col(raw_cols, "ot_mnts", required=False) or find_col(raw_cols, "tot_ot", required=False),
+    "slp_mnts":       find_col(raw_cols, "slp_mnts", required=False) or find_col(raw_cols, "tot_slp", required=False),
     # Utilization
-    "tot_episd":      find_col(raw_cols, "tot_episd") or find_col(raw_cols, "episodes"),
-    "avg_los":        find_col(raw_cols, "avg_los") or find_col(raw_cols, "length_of_stay"),
+    "tot_episd":      find_col(raw_cols, "tot_episd", required=False) or find_col(raw_cols, "episodes"),
+    "avg_los":        find_col(raw_cols, "avg_los", required=False) or find_col(raw_cols, "length_of_stay"),
     # Payer / demographics
-    "dual_pct":       find_col(raw_cols, "dual_pct") or find_col(raw_cols, "dual"),
-    "alzh_pct":       find_col(raw_cols, "alzh") or find_col(raw_cols, "dementia"),
-    "diabetes_pct":   find_col(raw_cols, "diabetes"),
-    "acute_hosp_days":find_col(raw_cols, "acute_hosp"),
-    # Primary diagnosis pcts (17 categories)
-    "dx_infection":   find_col(raw_cols, "infctn") or find_col(raw_cols, "infection"),
-    "dx_cardio":      find_col(raw_cols, "circsystm") or find_col(raw_cols, "cardiac"),
-    "dx_respiratory": find_col(raw_cols, "rspsystm") or find_col(raw_cols, "respiratory"),
-    "dx_musculo":     find_col(raw_cols, "muscskltn") or find_col(raw_cols, "musculo"),
-    "dx_neuro":       find_col(raw_cols, "nrvsystm") or find_col(raw_cols, "neuro"),
-    "dx_ortho":       find_col(raw_cols, "orth") or find_col(raw_cols, "ortho"),
+    "dual_pct":       find_col(raw_cols, "dual_pct", required=False) or find_col(raw_cols, "dual"),
+    "alzh_pct":       find_col(raw_cols, "alzh", required=False) or find_col(raw_cols, "dementia", required=False),
+    "diabetes_pct":   find_col(raw_cols, "diabetes", required=False),
+    "acute_hosp_days":find_col(raw_cols, "acute_hosp", required=False),
+    # Primary diagnosis pcts (optional enrichment)
+    "dx_infection":   find_col(raw_cols, "infctn", required=False) or find_col(raw_cols, "infection", required=False),
+    "dx_cardio":      find_col(raw_cols, "circsystm", required=False) or find_col(raw_cols, "cardiac", required=False),
+    "dx_respiratory": find_col(raw_cols, "rspsystm", required=False) or find_col(raw_cols, "respiratory", required=False),
+    "dx_musculo":     find_col(raw_cols, "muscskltn", required=False) or find_col(raw_cols, "musculo", required=False),
+    "dx_neuro":       find_col(raw_cols, "nrvsystm", required=False) or find_col(raw_cols, "neuro", required=False),
+    "dx_ortho":       find_col(raw_cols, "orth", required=False) or find_col(raw_cols, "ortho", required=False),
 }
 
 print("Column mapping (selected):")
@@ -197,14 +202,14 @@ if not (NATIONAL_MIN <= total <= NATIONAL_MAX):
     raise AssertionError(f"FAILED: {total:,} PROVIDER rows outside [{NATIONAL_MIN:,}, {NATIONAL_MAX:,}]")
 print(f"  PASS: {total:,} national provider rows")
 
-state_col = COL["state"] or find_col(list(df.columns), "state")
+state_col = COL["state"] or find_col(list(df.columns), "state", required=False)
 if state_col:
     hi = df[df[state_col] == "HI"]
     if not (HI_MIN <= len(hi) <= HI_MAX):
         raise AssertionError(f"FAILED: HI rows {len(hi)} outside [{HI_MIN}, {HI_MAX}]")
     print(f"  PASS: {len(hi)} HI rows")
 
-    prvdr_col = COL["prvdr_id"] or find_col(list(df.columns), "prvdr_id")
+    prvdr_col = COL["prvdr_id"] or find_col(list(df.columns), "prvdr_id", required=False)
     if prvdr_col:
         hi_non12 = hi[~hi[prvdr_col].str.startswith("12", na=True)]
         if len(hi_non12) > 0:

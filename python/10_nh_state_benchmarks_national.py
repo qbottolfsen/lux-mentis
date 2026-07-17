@@ -84,29 +84,34 @@ print(f"Columns ({len(raw_cols)}): {raw_cols[:8]} ...")
 print()
 
 
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
 # Identify the state/nation identifier column
-state_col = find_col(raw_cols, "state_or_nation") or find_col(raw_cols, "state") or raw_cols[0]
+state_col = find_col(raw_cols, "state_or_nation", required=False) or find_col(raw_cols, "state")
 print(f"State/nation identifier column: {state_col}")
 
 # Find key benchmark columns
 overall_col  = find_col(raw_cols, "overall_rating")
 health_col   = find_col(raw_cols, "health_inspection_rating", exclude=["chain"])
-qm_col       = find_col(raw_cols, "qm_rating") or find_col(raw_cols, "quality_measure_rating")
+qm_col       = find_col(raw_cols, "qm_rating", required=False) or find_col(raw_cols, "quality_measure_rating")
 staff_col    = find_col(raw_cols, "staffing_rating")
 hprd_col     = find_col(raw_cols, "reported_total_nurse_staffing")
 rn_col       = find_col(raw_cols, "reported_rn_staffing")
 turnover_col = find_col(raw_cols, "total_nursing_staff_turnover")
 rn_turn_col  = find_col(raw_cols, "registered_nurse_turnover")
-census_col   = find_col(raw_cols, "average_number_of_residents")
+census_col   = find_col(raw_cols, "average_number_of_residents", required=False)
 
 print(f"  overall_rating: {overall_col}")
 print(f"  health_inspect: {health_col}")

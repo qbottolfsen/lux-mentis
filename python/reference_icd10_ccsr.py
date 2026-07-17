@@ -212,25 +212,30 @@ print(f"  Raw rows: {len(raw_rows):,}")
 # CCSR column names are consistent across versions but may have minor spacing differences.
 # We match by substring to be resilient.
 
-def find_col(cols, *substrings):
+def find_col(cols, *substrings, required=True):
     """Find column name containing all substrings (case-insensitive)."""
     for c in cols:
         cn = c.upper().strip().strip('"').strip("'").strip()
         if all(s.upper() in cn for s in substrings):
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
-col_code      = find_col(raw_cols, "ICD-10-CM CODE") or find_col(raw_cols, "CODE")
-col_desc      = find_col(raw_cols, "DESCRIPTION") or find_col(raw_cols, "DESC")
-col_dflt_ip   = find_col(raw_cols, "DEFAULT", "IP")
-col_dflt_op   = find_col(raw_cols, "DEFAULT", "OP")
-col_body      = find_col(raw_cols, "BODY")
+col_code      = find_col(raw_cols, "ICD-10-CM CODE", required=False) or find_col(raw_cols, "CODE")
+col_desc      = find_col(raw_cols, "DESCRIPTION", required=False) or find_col(raw_cols, "DESC")
+col_dflt_ip   = find_col(raw_cols, "DEFAULT", "IP", required=False)
+col_dflt_op   = find_col(raw_cols, "DEFAULT", "OP", required=False)
+col_body      = find_col(raw_cols, "BODY", required=False)
 
 # CCSR category pairs (1-6)
 cat_pairs = []
 for n in range(1, 7):
-    c_cat  = find_col(raw_cols, f"CCSR CATEGORY {n}") or find_col(raw_cols, f"CATEGORY {n}")
-    c_desc = find_col(raw_cols, f"CCSR CATEGORY {n} DESCRIPTION") or find_col(raw_cols, f"CATEGORY {n} DESCRIPTION")
+    c_cat  = find_col(raw_cols, f"CCSR CATEGORY {n}", required=False) or find_col(raw_cols, f"CATEGORY {n}", required=False)
+    c_desc = find_col(raw_cols, f"CCSR CATEGORY {n} DESCRIPTION", required=False) or find_col(raw_cols, f"CATEGORY {n} DESCRIPTION", required=False)
     if c_cat:
         cat_pairs.append((n, c_cat, c_desc))
 

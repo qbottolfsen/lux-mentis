@@ -210,32 +210,37 @@ print()
 
 # ── Column discovery ───────────────────────────────────────────────────────────
 
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
 def map_deficiency_cols(raw_cols: list) -> dict:
     return {
-        "ccn":           find_col(raw_cols, "cms_certification_number") or find_col(raw_cols, "ccn"),
+        "ccn":           find_col(raw_cols, "cms_certification_number", required=False) or find_col(raw_cols, "ccn"),
         "name":          find_col(raw_cols, "provider_name"),
         "state":         find_col(raw_cols, "state"),
-        "city":          find_col(raw_cols, "city"),
-        "zip":           find_col(raw_cols, "zip"),
-        "survey_date":   find_col(raw_cols, "survey_date") or find_col(raw_cols, "inspection_date"),
+        "city":          find_col(raw_cols, "city", required=False) or find_col(raw_cols, "citytown", required=False),
+        "zip":           find_col(raw_cols, "zip", required=False),
+        "survey_date":   find_col(raw_cols, "survey_date", required=False) or find_col(raw_cols, "inspection_date"),
         "prefix":        find_col(raw_cols, "deficiency_prefix"),
-        "category":      find_col(raw_cols, "deficiency_category"),
-        "tag_number":    find_col(raw_cols, "deficiency_tag_number") or find_col(raw_cols, "tag_number"),
-        "tag_desc":      find_col(raw_cols, "deficiency_description") or find_col(raw_cols, "short_description"),
+        "category":      find_col(raw_cols, "deficiency_category", required=False),
+        "tag_number":    find_col(raw_cols, "deficiency_tag_number", required=False) or find_col(raw_cols, "tag_number"),
+        "tag_desc":      find_col(raw_cols, "deficiency_description", required=False) or find_col(raw_cols, "short_description", required=False),
         "scope_sev":     find_col(raw_cols, "scope_severity"),
-        "corrected":     find_col(raw_cols, "corrected"),
-        "is_standard":   find_col(raw_cols, "standard"),
-        "is_complaint":  find_col(raw_cols, "complaint"),
-        "is_ic":         find_col(raw_cols, "infection_control"),
+        "corrected":     find_col(raw_cols, "corrected", required=False),
+        "is_standard":   find_col(raw_cols, "standard", required=False),
+        "is_complaint":  find_col(raw_cols, "complaint", required=False),
+        "is_ic":         find_col(raw_cols, "infection_control", required=False),
     }
 
 

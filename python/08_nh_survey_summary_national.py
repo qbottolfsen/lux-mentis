@@ -95,36 +95,41 @@ for c in all_raw_cols:
 print()
 
 
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
 COL = {
-    "ccn":   find_col(raw_cols, "cms_certification_number") or find_col(raw_cols, "ccn"),
-    "name":  find_col(raw_cols, "provider_name"),
+    "ccn":   find_col(raw_cols, "cms_certification_number", required=False) or find_col(raw_cols, "ccn"),
+    "name":  find_col(raw_cols, "provider_name", required=False),
     "state": find_col(raw_cols, "state"),
     "cycle": find_col(raw_cols, "cycle"),
-    "date":  find_col(raw_cols, "survey_date") or find_col(raw_cols, "date"),
+    "date":  find_col(raw_cols, "survey_date", required=False) or find_col(raw_cols, "date"),
     # Category deficiency counts
     "cat_abuse":    find_col(raw_cols, "abuse"),
-    "cat_qol":      find_col(raw_cols, "quality_of_life") or find_col(raw_cols, "qol"),
-    "cat_assess":   find_col(raw_cols, "resident_assessment") or find_col(raw_cols, "assessment"),
+    "cat_qol":      find_col(raw_cols, "quality_of_life", required=False) or find_col(raw_cols, "qol"),
+    "cat_assess":   find_col(raw_cols, "resident_assessment", required=False) or find_col(raw_cols, "assessment"),
     "cat_nursing":  find_col(raw_cols, "nursing"),
-    "cat_rights":   find_col(raw_cols, "resident_rights") or find_col(raw_cols, "rights"),
+    "cat_rights":   find_col(raw_cols, "resident_rights", required=False) or find_col(raw_cols, "rights"),
     "cat_nutrition":find_col(raw_cols, "nutrition"),
     "cat_pharmacy": find_col(raw_cols, "pharmacy"),
-    "cat_environ":  find_col(raw_cols, "environmental") or find_col(raw_cols, "environ"),
+    "cat_environ":  find_col(raw_cols, "environmental", required=False) or find_col(raw_cols, "environ"),
     "cat_admin":    find_col(raw_cols, "administration"),
-    "cat_infection":find_col(raw_cols, "infection_control") or find_col(raw_cols, "infection"),
-    "cat_emergency":find_col(raw_cols, "emergency_preparedness") or find_col(raw_cols, "emergency"),
-    "cat_fire_total":find_col(raw_cols, "fire_safety_total") or find_col(raw_cols, "fire"),
-    "total_health": find_col(raw_cols, "total_health") or find_col(raw_cols, "health_total"),
-    "total_fire":   find_col(raw_cols, "total_fire") or find_col(raw_cols, "fire_total"),
+    "cat_infection":find_col(raw_cols, "infection_control", required=False) or find_col(raw_cols, "infection"),
+    "cat_emergency":find_col(raw_cols, "emergency_preparedness", required=False) or find_col(raw_cols, "emergency"),
+    "cat_fire_total":find_col(raw_cols, "fire_safety_total", required=False) or find_col(raw_cols, "fire"),
+    "total_health": find_col(raw_cols, "total_health", required=False) or find_col(raw_cols, "health_total"),
+    "total_fire":   find_col(raw_cols, "total_fire", required=False) or find_col(raw_cols, "fire_total"),
 }
 
 print("Column mapping:")

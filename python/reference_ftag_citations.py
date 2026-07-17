@@ -66,21 +66,26 @@ print(f"  Columns ({len(raw_cols)}): {raw_cols}")
 print()
 
 
-def find_col(cols, *substrings):
+def find_col(cols, *substrings, required=True):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
 # SQL endpoint returns display-name keys (not snake_case)
 COL = {
-    "prefix":      find_col(raw_cols, "Prefix") and find_col(raw_cols, "Prefix", "Number") is None and find_col(raw_cols, "Prefix") or
-                   find_col(raw_cols, "Deficiency Prefix"),
-    "tag_number":  find_col(raw_cols, "Tag Number"),
-    "prefix_tag":  find_col(raw_cols, "Prefix and Number") or find_col(raw_cols, "Prefix and"),
-    "description": find_col(raw_cols, "Description"),
-    "category":    find_col(raw_cols, "Category"),
+    "prefix":      find_col(raw_cols, "Prefix", required=False) and find_col(raw_cols, "Prefix", "Number", required=False) is None and find_col(raw_cols, "Prefix", required=False) or
+                   find_col(raw_cols, "Deficiency Prefix", required=False),
+    "tag_number":  find_col(raw_cols, "Tag Number", required=False),
+    "prefix_tag":  find_col(raw_cols, "Prefix and Number", required=False) or find_col(raw_cols, "Prefix and", required=False),
+    "description": find_col(raw_cols, "Description", required=False),
+    "category":    find_col(raw_cols, "Category", required=False),
 }
 # Simpler fallback: direct known column names from probe
 if not COL["prefix"]:

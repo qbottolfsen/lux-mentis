@@ -135,12 +135,17 @@ def load_dataset(label: str, dist_id: str, cache_path: pathlib.Path) -> pd.DataF
     return df
 
 
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
@@ -170,19 +175,19 @@ def transform_mds(df_raw: pd.DataFrame) -> pd.DataFrame:
     cols = list(df_raw.columns)
     print(f"  MDS QM columns ({len(cols)}): {cols[:8]} ...")
 
-    CCN       = find_col(cols, "cms_certification_number") or find_col(cols, "ccn")
-    NAME      = find_col(cols, "provider_name")
+    CCN       = find_col(cols, "cms_certification_number", required=False) or find_col(cols, "ccn")
+    NAME      = find_col(cols, "provider_name", required=False)
     STATE     = find_col(cols, "state")
-    MEAS_CODE = find_col(cols, "measure_code") or find_col(cols, "measure_id")
-    MEAS_DESC = find_col(cols, "measure_description") or find_col(cols, "measure_name")
-    RES_TYPE  = find_col(cols, "resident_type") or find_col(cols, "stay_type")
-    Q1        = find_col(cols, "q1") or find_col(cols, "quarter_1")
-    Q2        = find_col(cols, "q2") or find_col(cols, "quarter_2")
-    Q3        = find_col(cols, "q3") or find_col(cols, "quarter_3")
-    Q4        = find_col(cols, "q4") or find_col(cols, "quarter_4")
-    AVG       = find_col(cols, "four_quarter_average") or find_col(cols, "average_score")
-    FIVE_STAR = find_col(cols, "used_in_qm_five_star") or find_col(cols, "used_in_five_star")
-    FOOTNOTE  = find_col(cols, "footnote")
+    MEAS_CODE = find_col(cols, "measure_code", required=False) or find_col(cols, "measure_id")
+    MEAS_DESC = find_col(cols, "measure_description", required=False) or find_col(cols, "measure_name", required=False)
+    RES_TYPE  = find_col(cols, "resident_type", required=False) or find_col(cols, "stay_type")
+    Q1        = find_col(cols, "q1", required=False) or find_col(cols, "quarter_1")
+    Q2        = find_col(cols, "q2", required=False) or find_col(cols, "quarter_2")
+    Q3        = find_col(cols, "q3", required=False) or find_col(cols, "quarter_3")
+    Q4        = find_col(cols, "q4", required=False) or find_col(cols, "quarter_4")
+    AVG       = find_col(cols, "four_quarter_average", required=False) or find_col(cols, "average_score")
+    FIVE_STAR = find_col(cols, "used_in_qm_five_star", required=False) or find_col(cols, "used_in_five_star", required=False)
+    FOOTNOTE  = find_col(cols, "footnote", required=False)
 
     def g(row, col):
         return str(row.get(col, "")).strip() if col else ""
@@ -218,17 +223,17 @@ def transform_claims(df_raw: pd.DataFrame) -> pd.DataFrame:
     cols = list(df_raw.columns)
     print(f"  Claims QM columns ({len(cols)}): {cols[:8]} ...")
 
-    CCN       = find_col(cols, "cms_certification_number") or find_col(cols, "ccn")
-    NAME      = find_col(cols, "provider_name")
+    CCN       = find_col(cols, "cms_certification_number", required=False) or find_col(cols, "ccn")
+    NAME      = find_col(cols, "provider_name", required=False)
     STATE     = find_col(cols, "state")
-    MEAS_CODE = find_col(cols, "measure_code") or find_col(cols, "measure_id")
-    MEAS_DESC = find_col(cols, "measure_description") or find_col(cols, "measure_name")
-    RES_TYPE  = find_col(cols, "resident_type") or find_col(cols, "stay_type")
-    ADJ_SCORE = find_col(cols, "adjusted_score") or find_col(cols, "risk_adjusted")
-    OBS_SCORE = find_col(cols, "observed_score")
-    EXP_SCORE = find_col(cols, "expected_score")
-    FIVE_STAR = find_col(cols, "used_in_qm_five_star") or find_col(cols, "used_in_five_star")
-    FOOTNOTE  = find_col(cols, "footnote")
+    MEAS_CODE = find_col(cols, "measure_code", required=False) or find_col(cols, "measure_id")
+    MEAS_DESC = find_col(cols, "measure_description", required=False) or find_col(cols, "measure_name", required=False)
+    RES_TYPE  = find_col(cols, "resident_type", required=False) or find_col(cols, "stay_type")
+    ADJ_SCORE = find_col(cols, "adjusted_score", required=False) or find_col(cols, "risk_adjusted")
+    OBS_SCORE = find_col(cols, "observed_score", required=False)
+    EXP_SCORE = find_col(cols, "expected_score", required=False)
+    FIVE_STAR = find_col(cols, "used_in_qm_five_star", required=False) or find_col(cols, "used_in_five_star", required=False)
+    FOOTNOTE  = find_col(cols, "footnote", required=False)
 
     def g(row, col):
         return str(row.get(col, "")).strip() if col else ""
@@ -262,15 +267,15 @@ def transform_qrp(df_raw: pd.DataFrame) -> pd.DataFrame:
     cols = list(df_raw.columns)
     print(f"  QRP columns ({len(cols)}): {cols[:8]} ...")
 
-    CCN       = find_col(cols, "cms_certification_number") or find_col(cols, "ccn")
-    NAME      = find_col(cols, "provider_name")
+    CCN       = find_col(cols, "cms_certification_number", required=False) or find_col(cols, "ccn")
+    NAME      = find_col(cols, "provider_name", required=False)
     STATE     = find_col(cols, "state")
-    COUNTY    = find_col(cols, "county")
-    MEAS_CODE = find_col(cols, "measure_code") or find_col(cols, "measure_id")
+    COUNTY    = find_col(cols, "county", required=False)
+    MEAS_CODE = find_col(cols, "measure_code", required=False) or find_col(cols, "measure_id")
     SCORE     = find_col(cols, "score")
-    FOOTNOTE  = find_col(cols, "footnote")
-    START     = find_col(cols, "start_date")
-    END       = find_col(cols, "end_date")
+    FOOTNOTE  = find_col(cols, "footnote", required=False)
+    START     = find_col(cols, "start_date", required=False)
+    END       = find_col(cols, "end_date", required=False)
 
     def g(row, col):
         return str(row.get(col, "")).strip() if col else ""

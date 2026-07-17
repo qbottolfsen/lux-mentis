@@ -84,35 +84,40 @@ print(f"Columns ({len(raw_cols)}): {raw_cols[:8]} ...")
 print()
 
 
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
 COL = {
-    "ccn":         find_col(raw_cols, "cms_certification_number") or find_col(raw_cols, "ccn"),
+    "ccn":         find_col(raw_cols, "cms_certification_number", required=False) or find_col(raw_cols, "ccn"),
     "name":        find_col(raw_cols, "provider_name"),
     "state":       find_col(raw_cols, "state"),
-    "city":        find_col(raw_cols, "city") or find_col(raw_cols, "citytown"),
-    "zip":         find_col(raw_cols, "zip"),
+    "city":        find_col(raw_cols, "city", required=False) or find_col(raw_cols, "citytown", required=False),
+    "zip":         find_col(raw_cols, "zip", required=False),
     # SNFRM (readmission) scores
     "snfrm_ach":   find_col(raw_cols, "snfrm", "achievement", exclude=["improvement"]),
     "snfrm_imp":   find_col(raw_cols, "snfrm", "improvement"),
-    "snfrm_score": find_col(raw_cols, "snfrm", "measure_score") or find_col(raw_cols, "snfrm_score"),
+    "snfrm_score": find_col(raw_cols, "snfrm", "measure_score", required=False) or find_col(raw_cols, "snfrm_score"),
     # HAI scores
     "hai_ach":     find_col(raw_cols, "hai", "achievement", exclude=["improvement"]),
     "hai_imp":     find_col(raw_cols, "hai", "improvement"),
-    "hai_score":   find_col(raw_cols, "hai", "measure_score") or find_col(raw_cols, "hai_score"),
+    "hai_score":   find_col(raw_cols, "hai", "measure_score", required=False) or find_col(raw_cols, "hai_score"),
     # Turnover and staffing
-    "turnover_score": find_col(raw_cols, "turnover_measure") or find_col(raw_cols, "turnover_score"),
-    "staffing_score": find_col(raw_cols, "staffing_measure") or find_col(raw_cols, "staffing_score"),
+    "turnover_score": find_col(raw_cols, "turnover_measure", required=False) or find_col(raw_cols, "turnover_score"),
+    "staffing_score": find_col(raw_cols, "staffing_measure", required=False) or find_col(raw_cols, "staffing_score"),
     # Summary
-    "performance_score": find_col(raw_cols, "performance_score") or find_col(raw_cols, "total_performance"),
-    "ipm":               find_col(raw_cols, "incentive_payment_multiplier") or find_col(raw_cols, "multiplier"),
+    "performance_score": find_col(raw_cols, "performance_score", required=False) or find_col(raw_cols, "total_performance"),
+    "ipm":               find_col(raw_cols, "incentive_payment_multiplier", required=False) or find_col(raw_cols, "multiplier"),
 }
 
 print("Column mapping:")

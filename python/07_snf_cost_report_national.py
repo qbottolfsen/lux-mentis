@@ -102,36 +102,41 @@ if hi_probe:
 print()
 
 
-def find_col(cols, *substrings, exclude=None):
+def find_col(cols, *substrings, required=True, exclude=None):
     for c in cols:
         if all(s.lower() in c.lower() for s in substrings):
             if exclude and any(e.lower() in c.lower() for e in exclude):
                 continue
             return c
+    if required:
+        raise ValueError(
+            f"Required column not found. Searched for: {substrings!r}. "
+            f"Available: {sorted(cols)}"
+        )
     return None
 
 
 COL = {
-    "ccn":              find_col(raw_cols, "provider ccn") or find_col(raw_cols, "ccn"),
-    "name":             find_col(raw_cols, "facility name") or find_col(raw_cols, "provider name"),
-    "state":            find_col(raw_cols, "state code") or find_col(raw_cols, "state"),
-    "control_type":     find_col(raw_cols, "type of control"),
-    "fy_begin":         find_col(raw_cols, "fiscal year begin") or find_col(raw_cols, "fy begin"),
-    "fy_end":           find_col(raw_cols, "fiscal year end") or find_col(raw_cols, "fy end"),
+    "ccn":              find_col(raw_cols, "provider ccn", required=False) or find_col(raw_cols, "ccn"),
+    "name":             find_col(raw_cols, "facility name", required=False) or find_col(raw_cols, "provider name"),
+    "state":            find_col(raw_cols, "state code", required=False) or find_col(raw_cols, "state"),
+    "control_type":     find_col(raw_cols, "type of control", required=False),
+    "fy_begin":         find_col(raw_cols, "fiscal year begin", required=False) or find_col(raw_cols, "fy begin"),
+    "fy_end":           find_col(raw_cols, "fiscal year end", required=False) or find_col(raw_cols, "fy end"),
     # Payer days — SNF-specific (excludes NF/Medicaid-only beds)
     "days_medicare":    find_col(raw_cols, "snf days title xviii"),
     "days_medicaid":    find_col(raw_cols, "snf days title xix"),
-    "days_other":       find_col(raw_cols, "snf days other"),
+    "days_other":       find_col(raw_cols, "snf days other", required=False),
     "days_total":       find_col(raw_cols, "snf days total"),
     "bed_days_avail":   find_col(raw_cols, "snf bed days available"),
     # Beds
-    "beds":             find_col(raw_cols, "snf number of beds") or find_col(raw_cols, "number of beds"),
+    "beds":             find_col(raw_cols, "snf number of beds", required=False) or find_col(raw_cols, "number of beds", required=False),
     # Financials
     "net_revenue":      find_col(raw_cols, "net patient revenue"),
     "net_income":       find_col(raw_cols, "net income"),
     "total_costs":      find_col(raw_cols, "total costs"),
-    "total_salaries":   find_col(raw_cols, "total salaries"),
-    "contract_labor":   find_col(raw_cols, "contract labor"),
+    "total_salaries":   find_col(raw_cols, "total salaries", required=False),
+    "contract_labor":   find_col(raw_cols, "contract labor", required=False),
 }
 
 print("Column mapping:")
