@@ -74,6 +74,8 @@ PAGE_SIZE   = 1_000
 FORCE_REFRESH = "--refresh" in sys.argv
 
 # CMS scope/severity grid (A-L)
+# Source: SOM Appendix P, CMS Pub. 100-07 State Operations, Transmittal 156 (2016-06-10),
+#         "IV. Deficiency Categorization" — verified against the grid directly.
 SCOPE_SEVERITY = {
     "A": (1, "Isolated",    "No Actual Harm - Minimal Potential"),
     "B": (1, "Pattern",     "No Actual Harm - Minimal Potential"),

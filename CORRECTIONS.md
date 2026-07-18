@@ -10,7 +10,7 @@ what replaced it, why it changed, and the commit where the correction was made.
 **2026-07-15 — Staffing non-compliance percentage wrong**
 - Published: "75.5% of SNFs — 10,951 of 14,695"
 - Corrected: "74.5% of SNFs — 10,951 of 14,695"
-- Cause: arithmetic error; 10,951 / 14,695 = 74.5%, not 75.5%
+- Cause: transcription error — 74.5% written as 75.5% in initial README; 10,951 / 14,695 = 0.7451
 - Commit: f05a5c6
 
 **2026-07-15 — VBP penalty rate overstated denominator**
@@ -40,21 +40,52 @@ what replaced it, why it changed, and the commit where the correction was made.
 - Status: script corrected and field names corrected; 87.6% counterfactual publishes after output CSV is regenerated.
 - Commits: c43b9b9 (first), 7f30b75 (second — incomplete), b963512 (third — formula corrected), 7f25892 (fourth — HPRD basis closed), this commit (fifth — field rename; counterfactual reframe)
 
+**2026-07-17 — 22.9% RN HPRD finding removed: unsourced figure, unsourced threshold**
+- Published: "22.9% of all SNFs nationally have RN HPRD below 0.4, the threshold CMS has proposed
+  as a minimum" (original); later reframed as "a more lenient floor than the 0.55 in the
+  compliance definition" when the 87.6% counterfactual was added
+- Removed: the figure was never computed by any pipeline script. Script 01 has used
+  `RN_HPRD_MIN = 0.55` since its first commit (5161467). No 0.4 threshold appears anywhere
+  in the codebase. The figure was hand-inserted in the original README with no source.
+- Threshold provenance: CMS-3442-F finalized 0.55 RN HPRD. The October 2022 NPRM also
+  proposed 0.55. No CMS document proposes or finalizes 0.4 as an RN HPRD minimum — confirmed
+  by web search against CMS sources. The original attribution ("threshold CMS has proposed")
+  was false. The reframing ("more lenient floor") was worse — a sourceless number with no
+  explanation.
+- Status: both the figure (22.9%) and the threshold (0.4) are ASSUMED — no pipeline provenance,
+  no regulatory citation. Figure removed from README. Basis verification (column is unadjusted
+  PBJ HPRD) is still correct and documented below; it verifies the column binding for the 87.6%
+  finding, not a separate 22.9% finding that no longer exists.
+- Note: `rn_hprd` binding remains CORROBORATED (SRC dict line 88, script comment, CMS rule text
+  — three concordant sources). This covers the 87.6% counterfactual, not the removed 22.9%.
+
 ---
 
 ## Pending verification
 
-**RN HPRD — raw vs case-mix adjusted (affects 22.9% finding) — RESOLVED**
-- Published: "22.9% of all SNFs nationally have RN HPRD below 0.4, the threshold CMS has proposed
-  as a minimum"
+**RN HPRD — raw vs case-mix adjusted (affects 87.6% counterfactual) — RESOLVED**
+- Question: does `rn_hprd` bind to the unadjusted (PBJ-direct) column or a case-mix-adjusted
+  variant?
 - Resolved: Script 01 SRC dict maps `rn_hprd` to the explicit CMS column name
   `reported_rn_staffing_hours_per_resident_per_day` (line 88). The script comment states
   "reported = direct PBJ count, not case-mix adjusted." The CMS-3442-F rule text confirms
   thresholds apply "independent of a facility's case-mix." Three concordant sources (explicit
   column binding, script comment, rule text) establish that `rn_hprd` is unadjusted PBJ HPRD.
-  The 22.9% figure compares two unadjusted values. No further verification required.
 - Note: script 01 uses an explicit SRC dict, not find_col(). The A4 fix to find_col() does not
   affect this binding.
+
+**SCOPE_SEVERITY grid (02_nh_deficiencies_national.py lines 77-90) — VERIFIED**
+- Question: does the A-L parsing dict match the authoritative CMS source?
+- Verified: read against SOM Appendix P (CMS Pub. 100-07 State Operations, Transmittal 156,
+  June 10, 2016, "IV. Deficiency Categorization" and the Scope and Severity Grid reproduced
+  in Virginia DHS P-02055). The dict matches the grid exactly:
+  - Level 1 (No Actual Harm, Minimal): A=Isolated, B=Pattern, C=Widespread
+  - Level 2 (No Actual Harm, >Minimal): D=Isolated, E=Pattern, F=Widespread
+  - Level 3 (Actual Harm): G=Isolated, H=Pattern, I=Widespread
+  - Level 4 (Immediate Jeopardy): J=Isolated, K=Pattern, L=Widespread
+- G+ (severity_level >= 3) correctly captures G, H, I, J, K, L — the full set of Actual Harm
+  and Immediate Jeopardy citations. The 19.0% G+ abuse/neglect finding is CORROBORATED:
+  parse table VERIFIED + count is a Level 1 pipeline computation from verified data.
 
 **rn_meets_3442f and total_meets_3442f columns — all null in current CSV; RESOLVED**
 - The NH Provider Info output (prior to regeneration) contains `rn_meets_3442f`, `total_meets_3442f`,

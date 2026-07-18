@@ -52,8 +52,6 @@ Staffing findings use the NH Provider Info universe (14,695). Deficiency and pen
 
 *Rule status and framing: CMS-3442-F was repealed — Public Law 119-21 (Jul 2025) prohibited enforcement; CMS formally repealed it (Federal Register, Dec 2025). Our June 2026 data is post-repeal. CMS does not publish a staffing compliance determination in the NH Provider Info API; `meets_3442f_thresholds` is computed entirely by this pipeline. The 87.6% is a counterfactual: it describes how many facilities would not have met the final-state thresholds against a standard that was repealed before those thresholds fully took effect (Phase 3, requiring all four minimums, was scheduled for 2027–2029). *(See [CORRECTIONS.md](CORRECTIONS.md))*
 
-A separate, independently computed metric: 22.9% of all SNFs have weekday RN HPRD below 0.4 — a more lenient floor than the 0.55 in the compliance definition. Both numbers are Level 1 observations from the same source column (`rn_hprd`); they measure different thresholds.
-
 National average RN HPRD is 0.68. National nurse turnover is 46.1%. Geographic concentration against the 3442-F RN HPRD threshold (0.55): Louisiana 85%, Oklahoma 65.7%, Arkansas 58.4%, Texas 54% — each has a majority of its SNFs below that floor. *(Level 1 — counterfactual; see [CORRECTIONS.md](CORRECTIONS.md))*
 
 ### Deficiency Citations
@@ -93,7 +91,7 @@ National median operating margin: -3.9%. 1,060 facilities with margin below -5%.
 
 ### State Rankings
 
-Hawaii leads nationally on overall Five-Star at 3.59 (national average: 3.01). Missouri (2.48), Louisiana (2.51), and Illinois (2.56) are at the bottom. Texas has the highest immediate jeopardy citation rate per facility — 1.98 IJ citations per SNF, 2,326 total — and the second-highest penalty dollar total ($58M across 823 facilities). Illinois leads nationally in total fines at $70 million across 472 penalized facilities. Louisiana has 85% of its SNFs below the proposed RN HPRD minimum. *(Level 1)*
+Hawaii leads nationally on overall Five-Star at 3.59 (national average: 3.01). Missouri (2.48), Louisiana (2.51), and Illinois (2.56) are at the bottom. Texas has the highest immediate jeopardy citation rate per facility — 1.98 IJ citations per SNF, 2,326 total — and the second-highest penalty dollar total ($58M across 823 facilities). Illinois leads nationally in total fines at $70 million across 472 penalized facilities. Louisiana has 85% of its SNFs below the 0.55 RN HPRD counterfactual threshold. *(Level 1)*
 
 **Hawaii: composite rating vs. inspection record.** Hawaii ranks first nationally in overall Five-Star (3.59), driven by a QM star of 4.5 and staffing star of 4.3. Its health inspection star is 2.9 — below the national average of 3.0. Separately, 14.3% of Hawaii's 42 SNFs carry active SFF or SFF Candidate status (1 active, 5 candidates), compared to 3.6% nationally (86 active SFF, 440 candidates). The state with the highest composite rating also carries roughly four times the national SFF concentration. These are not contradictory — the composite blends three domains, and they do not move together here. QM and staffing pull Hawaii's overall star up while the inspection domain lags. The most plausible mechanism is survey frequency: if Hawaii facilities receive more frequent standard surveys within CMS's regional scheduling, each facility accumulates more citation events over any fixed window, which suppresses the inspection star independent of underlying quality. That is a hypothesis, not a confirmed finding. *(Level 3 — plausible mechanism)*
 
