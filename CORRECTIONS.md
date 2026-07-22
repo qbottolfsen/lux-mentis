@@ -106,12 +106,12 @@ what replaced it, why it changed, and the commit where the correction was made.
   field `is_ic` (infection control inspection flag) — not a substring match; not covered here.
 - Status: all four category-based flags elevated from INFERRED to VERIFIED.
 
-**lm_rn_meets_3442f and lm_total_meets_3442f columns — all null in current CSV; RESOLVED**
-- The NH Provider Info output (prior to regeneration) contains `lm_rn_meets_3442f`, `lm_total_meets_3442f`,
-  and `lm_rn_weekend_meets_3442f` as entirely null. (Formerly `rn_hprd_compliant` → `rn_meets_3442f`
-  → `lm_rn_meets_3442f` — lm_ prefix applied 2026-07-21 to mark pipeline-computed fields.)
-- Explanation confirmed: these fields did not exist in earlier script versions that produced the
-  current CSV. They will be non-null (True/False) after the output is regenerated.
-- `lm_meets_3442f_thresholds` (the composite) is populated in the current CSV with the old formula's
-  values (10,951 False, 3,744 True) — those values are superseded by the corrected formula.
-- Resolved as a null issue. Values will be correct after CSV regeneration.
+**lm_rn_meets_3442f and related threshold fields — FULLY RESOLVED (regenerated 2026-07-21)**
+- Prior CSV had these fields null (they didn't exist in older script versions) and `lm_meets_3442f_thresholds`
+  populated with an incorrect formula's values (10,951 False / 3,744 True).
+- Regenerated 2026-07-21 with corrected four-part formula:
+  - `lm_meets_3442f_thresholds=True` for 1,827 of 14,695 (12.4%)
+  - `lm_meets_3442f_thresholds=False` for 12,868 of 14,695 (**87.6%** — the published counterfactual)
+  - `lm_rn_meets_3442f`, `lm_aide_meets_3442f`, `lm_total_meets_3442f`, `lm_rn_weekend_meets_3442f`
+    all fully populated as True/False strings
+  - Field names now carry lm_ prefix; null-rate suppression entries removed from registry.
