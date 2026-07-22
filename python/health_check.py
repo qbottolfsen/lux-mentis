@@ -52,13 +52,24 @@ try:
 except ImportError:
     sys.exit("pandas required: pip install pandas")
 
-SCRIPT_DIR   = pathlib.Path(__file__).parent
-OUTPUT_DIR   = SCRIPT_DIR / "output_reference"
-REGISTRY     = SCRIPT_DIR / "datasets_registry.json"
-REPORT_FILE  = OUTPUT_DIR / "divergence_report.json"
+SCRIPT_DIR    = pathlib.Path(__file__).parent
+OUTPUT_DIR    = SCRIPT_DIR / "output_reference"
+REGISTRY      = SCRIPT_DIR / "datasets_registry.json"
+REPORT_FILE   = OUTPUT_DIR / "divergence_report.json"
+SNAPSHOT_FILE = OUTPUT_DIR / "health_snapshot.json"
 
 NULL_RATE_THRESHOLD   = 0.95   # flag if >= 95% null
 CONST_VALUE_MIN_ROWS  = 100    # only flag constant-value on datasets > 100 rows
+
+# Drift detection thresholds
+ROW_DRIFT_PCT      = 0.05   # flag if row count shifts > 5% from snapshot
+NULL_SPIKE_THRESH  = 0.90   # flag if field was < this null rate and now crosses it (semantic-drift)
+
+# Cross-source reconciliation: (dataset_a, dataset_b, max_allowed_row_difference_pct)
+CROSS_SOURCE_CHECKS = [
+    ("snf_enrollments", "snf_owners_flags",      0.001),   # same 14,425 spine
+    ("cms_enrollments_all_types", "facility_master", 0.001), # same 57,767 spine
+]
 
 # Published findings — maps dataset name to field names that feed a finding
 FINDING_FIELDS = {
@@ -322,6 +333,155 @@ def check_dataset(ds: dict, live: bool) -> dict:
     return result
 
 
+# ── Snapshot / Drift Detection ────────────────────────────────────────────────
+
+def compute_field_stats(df: "pd.DataFrame") -> dict:
+    """Per-field stats for snapshot and drift comparison."""
+    stats = {}
+    for col in df.columns:
+        null_rate = float(df[col].isna().mean())
+        non_null = df[col].dropna()
+        nunique = int(non_null.nunique()) if len(non_null) > 0 else 0
+        stats[col] = {
+            "null_rate": round(null_rate, 4),
+            "nunique": nunique,
+            "is_constant": (nunique == 1 and len(non_null) > 0),
+        }
+    return stats
+
+
+def load_snapshot() -> dict:
+    if SNAPSHOT_FILE.exists():
+        try:
+            with open(SNAPSHOT_FILE, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+
+def save_snapshot(run_results: list) -> None:
+    snap = {
+        "generated": datetime.now(timezone.utc).isoformat(),
+        "datasets": {},
+    }
+    for r in run_results:
+        name = r.get("dataset")
+        if r.get("row_count") is None:
+            continue
+        snap["datasets"][name] = {
+            "row_count": r["row_count"],
+            "col_count": r["col_count"],
+            "field_stats": r.get("field_stats", {}),
+        }
+    with open(SNAPSHOT_FILE, "w", encoding="utf-8") as f:
+        json.dump(snap, f, indent=2)
+
+
+def compare_to_snapshot(name: str, result: dict, prior: dict) -> list:
+    """Return drift items (dicts with severity/message) relative to prior snapshot."""
+    if name not in prior.get("datasets", {}):
+        return []
+
+    snap_ds = prior["datasets"][name]
+    drift = []
+
+    # Row count drift
+    prior_rows = snap_ds.get("row_count")
+    curr_rows = result.get("row_count")
+    if prior_rows and curr_rows is not None and prior_rows > 0:
+        pct_change = abs(curr_rows - prior_rows) / prior_rows
+        if pct_change > ROW_DRIFT_PCT:
+            direction = "grew" if curr_rows > prior_rows else "shrank"
+            drift.append({
+                "check": "row_drift",
+                "severity": "DRIFT",
+                "message": (
+                    f"Row count {direction}: {prior_rows:,} → {curr_rows:,} "
+                    f"({pct_change*100:.1f}% change). Verify source vintage."
+                ),
+            })
+
+    # Field appearance / disappearance
+    prior_fields = set(snap_ds.get("field_stats", {}).keys())
+    curr_fields  = set(result.get("field_stats", {}).keys())
+    for f in (curr_fields - prior_fields):
+        drift.append({
+            "check": "new_field",
+            "severity": "DRIFT",
+            "field": f,
+            "message": f"New field '{f}' appeared — not in prior snapshot. CMS schema addition?",
+        })
+    for f in (prior_fields - curr_fields):
+        drift.append({
+            "check": "dropped_field",
+            "severity": "DRIFT",
+            "field": f,
+            "message": f"Field '{f}' missing — was in prior snapshot. CMS schema drop or rename?",
+        })
+
+    # Semantic drift: field that was populated is now mostly null
+    for f, prior_stats in snap_ds.get("field_stats", {}).items():
+        curr_stats = result.get("field_stats", {}).get(f)
+        if curr_stats is None:
+            continue
+        p_null = prior_stats.get("null_rate", 0)
+        c_null = curr_stats.get("null_rate", 0)
+        if p_null < NULL_SPIKE_THRESH and c_null >= NULL_SPIKE_THRESH:
+            drift.append({
+                "check": "semantic_drift",
+                "severity": "DRIFT",
+                "field": f,
+                "message": (
+                    f"Field '{f}' null rate spiked: {p_null*100:.1f}% → {c_null*100:.1f}%. "
+                    f"CMS may have stopped populating this field (cf. used_in_five_star pattern). "
+                    f"Log in DIVERGENCE_LOG.md."
+                ),
+            })
+        # Constant-value flips
+        was_const = prior_stats.get("is_constant", False)
+        is_const  = curr_stats.get("is_constant", False)
+        if was_const != is_const:
+            drift.append({
+                "check": "constant_flip",
+                "severity": "DRIFT",
+                "field": f,
+                "message": (
+                    f"Field '{f}' {'became constant' if is_const else 'is no longer constant'} "
+                    f"(prior nunique={prior_stats.get('nunique')}, "
+                    f"current nunique={curr_stats.get('nunique')}). Investigate."
+                ),
+            })
+
+    return drift
+
+
+def cross_source_checks(results_by_name: dict) -> list:
+    """Check that paired datasets whose row counts must agree still agree."""
+    issues = []
+    for ds_a, ds_b, max_pct in CROSS_SOURCE_CHECKS:
+        ra = results_by_name.get(ds_a, {})
+        rb = results_by_name.get(ds_b, {})
+        rows_a = ra.get("row_count")
+        rows_b = rb.get("row_count")
+        if rows_a is None or rows_b is None:
+            continue
+        if rows_a == 0:
+            continue
+        pct = abs(rows_a - rows_b) / rows_a
+        if pct > max_pct:
+            issues.append({
+                "check": "cross_source_reconciliation",
+                "severity": "DRIFT",
+                "message": (
+                    f"Cross-source mismatch: {ds_a} ({rows_a:,} rows) vs "
+                    f"{ds_b} ({rows_b:,} rows) — {pct*100:.2f}% apart. "
+                    f"These datasets must share a spine. Investigate before re-pull."
+                ),
+            })
+    return issues
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -329,6 +489,10 @@ def main():
     parser.add_argument("--live", action="store_true",
                         help="Fetch 1-row sample from live API for field-set comparison")
     parser.add_argument("--dataset", help="Run against a single dataset by name")
+    args = parser.parse_args()
+
+    parser.add_argument("--no-snapshot", action="store_true",
+                        help="Skip snapshot comparison and do not update snapshot")
     args = parser.parse_args()
 
     with open(REGISTRY, encoding="utf-8") as f:
@@ -339,6 +503,9 @@ def main():
         datasets = [d for d in datasets if d["name"] == args.dataset]
         if not datasets:
             sys.exit(f"Dataset '{args.dataset}' not found in registry.")
+
+    prior_snapshot = {} if args.no_snapshot else load_snapshot()
+    has_prior = bool(prior_snapshot.get("datasets"))
 
     report = {
         "generated": datetime.now(timezone.utc).isoformat(),
@@ -351,15 +518,31 @@ def main():
     latent_total     = 0
     info_total       = 0
     suppressed_total = 0
+    all_drift        = []
 
     print(f"\n{'='*70}")
     print(f"  LUX MENTIS CONFORMANCE HARNESS")
     print(f"  {report['generated']}  |  live_api={args.live}")
     print(f"{'='*70}\n")
 
+    results_by_name = {}
     for ds in datasets:
         result = check_dataset(ds, live=args.live)
+
+        # Compute field stats for snapshot (load the file again only if it exists)
+        if result["row_count"] is not None:
+            output = OUTPUT_DIR / ds["output_file"]
+            try:
+                fmt = ds.get("format", "csv")
+                df_snap = pd.read_parquet(output) if fmt == "parquet" else pd.read_csv(output, dtype=str, low_memory=False)
+                result["field_stats"] = compute_field_stats(df_snap)
+            except Exception:
+                result["field_stats"] = {}
+        else:
+            result["field_stats"] = {}
+
         report["results"].append(result)
+        results_by_name[ds["name"]] = result
 
         status_sym = {"OK": "OK", "BLOCKING": "XX", "LATENT": ">>", "INFO": "--",
                       "MISSING_OUTPUT": "XX", "SKIPPED_GITIGNORED": "SK"}.get(result["status"], "??")
@@ -390,14 +573,41 @@ def main():
                        "INFO":     "  [INFO]    "}.get(sev, "  [?]       ")
                 print(f"{sym} {d['message']}")
 
+        # Drift detection against prior snapshot
+        if has_prior:
+            drift = compare_to_snapshot(ds["name"], result, prior_snapshot)
+            if drift:
+                all_drift.extend([(ds["name"], d) for d in drift])
+
+    # Cross-source reconciliation
+    cs_issues = cross_source_checks(results_by_name)
+    if cs_issues:
+        all_drift.extend([("cross_source", d) for d in cs_issues])
+
     print(f"\n{'='*70}")
     print(f"  SUMMARY:  BLOCKING={blocking_total}  LATENT={latent_total}  INFO={info_total}  SUPPRESSED={suppressed_total}")
+    if has_prior:
+        print(f"  DRIFT SIGNALS: {len(all_drift)} (vs prior snapshot {prior_snapshot.get('generated','?')[:10]})")
     print(f"  Report written to: {REPORT_FILE.name}")
     print(f"{'='*70}\n")
 
+    if all_drift:
+        print(f"{'='*70}")
+        print(f"  DRIFT SIGNALS — review before logging as divergence or suppressing")
+        print(f"  Detection is automated; classification (INTERNAL/EXTERNAL-DOC/EXTERNAL-UNDOC) is yours.")
+        print(f"{'='*70}\n")
+        for ds_name, d in all_drift:
+            print(f"  [DRIFT] [{ds_name}] {d['message']}")
+        print()
+
     # Write machine-readable report
+    report["drift_signals"] = [{"dataset": n, **d} for n, d in all_drift]
     with open(REPORT_FILE, "w") as f:
         json.dump(report, f, indent=2)
+
+    # Save updated snapshot
+    if not args.no_snapshot and not args.dataset:
+        save_snapshot(report["results"])
 
     return 1 if blocking_total > 0 else 0
 

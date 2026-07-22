@@ -27,10 +27,16 @@ Incentive Payment Multiplier (IPM): 0.98 - 1.02
 Output: output_reference/snf_vbp_national.csv
 
 Pre-registered assertions:
-  National rows:  [8,000 -- 15,000]  (not all 14,695 SNFs participate)
-  HI rows:        [35 -- 42]
+  National rows:  [13,000 -- 15,000]  (FY2026 confirmed 13,900 via API probe)
+  HI rows:        [35 -- 42]          (confirmed 39)
   IPM range:      all in [0.96 -- 1.04]  (small adjustment range)
   Performance scores: mostly numeric
+
+NOTE: Prior output (snf_vbp_national.csv before 2026-07-21) had 12,901 rows due to a
+pagination bug — probe response (offset 0, 1 row) was included in all_rows, then the
+loop started at offset PAGE_SIZE=1000, silently skipping offsets 1-999 (AK, AL, AR, AZ,
+partial CA). API count was always 13,900. Fix: probe is now for count/schema only; data
+fetch starts at offset 0.
 """
 
 import json, pathlib, sys, time, urllib.request
@@ -48,7 +54,7 @@ DIST_ID  = "cf1f058c-65d6-5496-9770-a244cfab2a13"
 BASE_URL = f"https://data.cms.gov/provider-data/api/1/datastore/query/{DIST_ID}"
 PAGE_SIZE = 1_000
 
-EXPECTED_MIN = 8_000
+EXPECTED_MIN = 13_000
 EXPECTED_MAX = 15_000
 HI_MIN = 35
 HI_MAX = 42
@@ -125,11 +131,10 @@ for k, v in COL.items():
     print(f"  {k:<20} {v or 'NOT FOUND'}")
 print()
 
-# Fetch all pages
-all_rows = list(probe.get("results", []))
-offset = PAGE_SIZE
-page = 1
-print(f"  Page  1: {len(all_rows)}")
+# Fetch all pages — probe is for count/column-names only; data fetch starts at offset 0
+all_rows = []
+offset = 0
+page = 0
 
 while True:
     page += 1

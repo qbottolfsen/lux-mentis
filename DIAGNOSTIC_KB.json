@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "description": "Lux Mentis — end-user and IT diagnostic knowledge base. Structured entries for a future in-context help surface or support triage tool. Two audiences: end-user/administrator (symptom looks broken but isn't) and technical/IT (known upstream condition, not a local bug). Even locally resolved issues get logged — the aggregate of resolved-locally is signal about what confuses users at scale.",
+    "last_updated": "2026-07-21",
+    "status": "DORMANT — structure present; wiring to a UI surface activates when a clinical/interface surface exists. Knowledge captured now; wiring deferred.",
+    "schema": {
+      "id": "sequential KB-NNN",
+      "audience": "END_USER | IT | BOTH",
+      "symptom_as_seen": "what the user or IT staff actually observes (their language, not ours)",
+      "likely_cause": "the most probable root cause",
+      "check": "what to look at first",
+      "fix": "resolution steps",
+      "resolution_owner": "LOCAL (user or IT can resolve) | UPSTREAM (not a local bug; log it)",
+      "log_even_if_resolved": true,
+      "notes": "optional context"
+    }
+  },
+  "entries": [
+    {
+      "id": "KB-001",
+      "audience": "END_USER",
+      "symptom_as_seen": "The screen is frozen / nothing is loading / the page won't respond",
+      "likely_cause": "Browser tab has crashed, session timed out, or a background process is blocking the render",
+      "check": "Look at the browser tab — is the spinner still spinning? Is there a session-timeout message?",
+      "fix": "1. Wait 30 seconds — some operations complete slowly. 2. Refresh the browser tab (F5 or Ctrl+R). 3. If still unresponsive: close the tab, open a new one, and navigate back. 4. If that fails: clear browser cache (Ctrl+Shift+Delete in Chrome/Edge) and try again.",
+      "resolution_owner": "LOCAL",
+      "log_even_if_resolved": true,
+      "notes": "If this symptom is reported repeatedly for the same screen or operation, it is a performance signal, not a one-off. Log the count."
+    },
+    {
+      "id": "KB-002",
+      "audience": "END_USER",
+      "symptom_as_seen": "I pressed the back arrow and now my data is gone / the form reset",
+      "likely_cause": "Browser back button navigates outside the application's session state. Some workflows (multi-step forms, data entry wizards) are destructively sensitive to browser navigation — the in-app 'Previous' control is safe; the browser back arrow is not.",
+      "check": "Check whether there is a 'Previous Step' or 'Back' button within the application (not in the browser toolbar). That is the correct navigation control.",
+      "fix": "Use the in-app Previous/Back control rather than the browser back arrow for any multi-step workflow. If data was lost: re-enter from the last save point. There is usually no recovery from a browser-back navigation — the session state is gone.",
+      "resolution_owner": "LOCAL",
+      "log_even_if_resolved": true,
+      "notes": "This is the single most common source of 'the system lost my data' reports. The system did not lose it — the browser navigation discarded the in-memory form state. Worth a tooltip or warning on entry to multi-step workflows."
+    },
+    {
+      "id": "KB-003",
+      "audience": "END_USER",
+      "symptom_as_seen": "The application is not loading / shows a login page I already passed",
+      "likely_cause": "Session timed out (most EHR/care management systems have 15–30 minute idle timeouts) or a cookie was cleared",
+      "check": "Is the URL still the same? Does it show a login screen? Does your clock say you've been idle for more than 15 minutes?",
+      "fix": "Log in again. If you had unsaved work, check whether the application has a draft/autosave feature — some systems recover the last unsaved state on re-login.",
+      "resolution_owner": "LOCAL",
+      "log_even_if_resolved": false,
+      "notes": "Repeated session timeouts during active use may indicate a system clock mismatch or an incorrect idle-timeout setting. Escalate to IT if it happens mid-workflow consistently."
+    },
+    {
+      "id": "KB-004",
+      "audience": "END_USER",
+      "symptom_as_seen": "The page looks wrong / buttons are in the wrong place / text is overlapping",
+      "likely_cause": "Browser zoom is not at 100%, a browser extension is modifying the page layout, or a cached CSS file is outdated",
+      "check": "1. Check browser zoom (Ctrl+0 resets to 100%). 2. Try the page in an incognito/private window (disables most extensions). 3. Hard-refresh (Ctrl+Shift+R or Ctrl+F5) to bypass cache.",
+      "fix": "Reset zoom (Ctrl+0). Disable extensions one at a time in incognito mode. If the issue persists in incognito: report to IT — it may be a rendering bug in the application.",
+      "resolution_owner": "LOCAL",
+      "log_even_if_resolved": true,
+      "notes": "Extension interference is underreported. Ad blockers, accessibility tools, and productivity extensions all modify page DOM. Incognito test is the fastest way to rule them out."
+    },
+    {
+      "id": "KB-005",
+      "audience": "IT",
+      "symptom_as_seen": "A physician or practitioner shows up in two different practices / two different locations in the system",
+      "likely_cause": "NPI registry conflict — the physician moved practices and the NPPES registry reflects both the old and new affiliation. The NPI is a permanent identifier; the practice association is a separate record that may lag the actual change. Local systems that sync from NPPES may pull both records.",
+      "check": "Look up the NPI at npiregistry.cms.hhs.gov. Check the 'Other Provider Identifiers' and 'Practice Locations' tabs. If both practices are listed in NPPES, this is a registry sync issue, not a local data error.",
+      "fix": "If NPPES is correct (both locations are current/valid): this is expected behavior — the physician has two active practice locations. Update the local system to reflect whichever is the primary. If NPPES is incorrect (old practice still listed after departure): the physician or new practice admin must submit an NPPES update. Local IT cannot fix an NPPES record. Log the ticket as UPSTREAM.",
+      "resolution_owner": "UPSTREAM",
+      "log_even_if_resolved": true,
+      "notes": "NPPES update requests are submitted at nppes.cms.hhs.gov. Processing time is typically 1–5 business days. Duplicate-appearing practitioners should never be merged locally without confirming the NPI is truly the same individual — NPI reuse is not allowed but data entry errors create apparent duplicates."
+    },
+    {
+      "id": "KB-006",
+      "audience": "IT",
+      "symptom_as_seen": "A pharmacy or formulary warning appeared for a medication/diagnosis combination that wasn't flagged before — nothing changed on our end",
+      "likely_cause": "An upstream drug database, formulary file, or approved-diagnosis list was updated at the vendor/payer level and the update propagated to the local system. The warning is new because the upstream rule is new — not because anything in the local configuration changed.",
+      "check": "Check the effective date of the warning rule in your pharmacy system or drug database. Does it match a recent vendor update notification? Contact the formulary vendor or PBM for the change log.",
+      "fix": "Verify the warning is clinically accurate given the update. If accurate: train clinical staff that this is a new rule, not a system malfunction. If it appears to be a false positive: report to the formulary vendor with the specific drug-diagnosis pair and effective date. Log as UPSTREAM regardless.",
+      "resolution_owner": "UPSTREAM",
+      "log_even_if_resolved": true,
+      "notes": "Drug interaction databases (First Databank, Multum, Micromedex) update on their own schedule, sometimes monthly. Vendors do not always send proactive notifications. A sudden increase in a category of warnings is a signal that an upstream rule set changed."
+    },
+    {
+      "id": "KB-007",
+      "audience": "IT",
+      "symptom_as_seen": "A CMS Care Compare / Five-Star / VBP field that used to have values is now showing blank or null for all facilities",
+      "likely_cause": "CMS stopped populating the field — either temporarily (data refresh cycle) or permanently (field deprecation without public notice). Known precedent: the 'used_in_five_star' flag in CMS quality measure data went from populated to 100% null with no announcement.",
+      "check": "1. Check the CMS data vintage date — is this a refresh where the field may not yet be populated? 2. Check the CMS data dictionary for the affected dataset for any recent revision. 3. Check data.cms.gov release notes. 4. Run health_check.py with --live to confirm the field is null in the live API, not just in a cached local file.",
+      "fix": "If confirmed null in live API: log as EXTERNAL-UNDOCUMENTED in DIVERGENCE_LOG.md. Do not rebuild downstream logic around a null field without confirming whether this is temporary or permanent. Contact cdo@hhs.gov for clarification before treating as permanent. If confirmed temporary: wait for the next refresh cycle (typically monthly for Care Compare) and re-pull.",
+      "resolution_owner": "UPSTREAM",
+      "log_even_if_resolved": true,
+      "notes": "CMS dataset field changes are documented inconsistently. The Five-Star Technical Users' Guide is updated 1–2 times per year; API schema changes may precede guide updates. Subscribe to CMS QualityNet list-serve for advance notice: https://www.qualitynet.cms.gov/listservs"
+    },
+    {
+      "id": "KB-008",
+      "audience": "IT",
+      "symptom_as_seen": "Our pipeline row count for a CMS dataset doesn't match what CMS says in their documentation",
+      "likely_cause": "Three common causes: (1) pagination bug — the script is not fetching all pages (see LMDL-001); (2) a filter is applied in the script that excludes some facilities; (3) CMS's documentation reflects a different vintage than the current API",
+      "check": "1. Probe the DKAN API with limit=1, offset=0 and read the 'count' field — this is the API's stated total. 2. Compare to what the script produces. 3. Check the script for any WHERE clause, filter, or state-specific parameter that might exclude facilities. 4. Check EXPECTED_MIN in the script — is it set conservatively enough to catch a row count regression?",
+      "fix": "If pagination: see LMDL-001 pattern — the probe response must not be included in the data rows; the data fetch must start at offset 0. If filter: verify the filter is intentional and documented. If vintage: confirm the CMS documentation date matches the pull date.",
+      "resolution_owner": "LOCAL",
+      "log_even_if_resolved": true,
+      "notes": "The EXPECTED_MIN/EXPECTED_MAX assertion in every Level 2 script is the first defense against silent row-count regressions. After any fix, tighten the expected range to within 10% of the confirmed correct count."
+    },
+    {
+      "id": "KB-009",
+      "audience": "END_USER",
+      "symptom_as_seen": "A facility's quality rating looks different here than on the CMS Care Compare website",
+      "likely_cause": "Data vintage mismatch. CMS updates Care Compare monthly; our pipeline pulls are done periodically. The rating shown here reflects the pull date stated in the footer — if CMS updated after that date, the website will show a different rating.",
+      "check": "Check the vintage date in the platform footer or data source description. Compare it to CMS Care Compare's 'Data Last Updated' date. If they differ by more than a month, the discrepancy is expected.",
+      "fix": "For the most current rating: use CMS Care Compare directly. The platform vintage is stated in the data source documentation.",
+      "resolution_owner": "UPSTREAM",
+      "log_even_if_resolved": false,
+      "notes": "This is not a data error — it is a documentation/expectation-setting issue. The platform's vintage date must be prominently displayed wherever quality ratings are shown."
+    }
+  ]
+}

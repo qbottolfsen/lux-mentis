@@ -1,20 +1,9 @@
 {
-  "generated": "2026-07-22T08:09:22.814806+00:00",
-  "live_api": false,
-  "datasets_checked": 24,
-  "results": [
-    {
-      "dataset": "snf_enrollments",
-      "label": "SNF Enrollments",
-      "output_file": "snf_enrollments_national.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:22.814835+00:00",
-      "divergences": [],
+  "generated": "2026-07-22T08:09:41.495265+00:00",
+  "datasets": {
+    "snf_enrollments": {
       "row_count": 14425,
       "col_count": 23,
-      "status": "OK",
       "field_stats": {
         "ENROLLMENT ID": {
           "null_rate": 0.0,
@@ -133,18 +122,9 @@
         }
       }
     },
-    {
-      "dataset": "snf_owners_flags",
-      "label": "SNF Owners \u00e2\u20ac\u201d Facility Flags (public)",
-      "output_file": "snf_owners_facility_flags.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:23.051680+00:00",
-      "divergences": [],
+    "snf_owners_flags": {
       "row_count": 14425,
       "col_count": 15,
-      "status": "OK",
       "field_stats": {
         "enrollment_id": {
           "null_rate": 0.0,
@@ -223,32 +203,9 @@
         }
       }
     },
-    {
-      "dataset": "snf_owners_raw",
-      "label": "SNF Owners \u00e2\u20ac\u201d Raw (gitignored, individual names)",
-      "output_file": "snf_owners_national.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": true,
-      "timestamp": "2026-07-22T08:09:23.179013+00:00",
-      "divergences": [],
-      "row_count": null,
-      "col_count": null,
-      "status": "SKIPPED_GITIGNORED",
-      "field_stats": {}
-    },
-    {
-      "dataset": "pos_iqies",
-      "label": "POS iQIES \u00e2\u20ac\u201d All Provider Types",
-      "output_file": "pos_iqies_national.parquet",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:23.179030+00:00",
-      "divergences": [],
+    "pos_iqies": {
       "row_count": 77283,
       "col_count": 182,
-      "status": "OK",
       "field_stats": {
         "prvdr_num": {
           "null_rate": 0.0,
@@ -1162,18 +1119,9 @@
         }
       }
     },
-    {
-      "dataset": "cms_enrollments_all_types",
-      "label": "CMS Enrollments \u00e2\u20ac\u201d All Medicare Provider Types",
-      "output_file": "cms_enrollments_all_types.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:27.283080+00:00",
-      "divergences": [],
+    "cms_enrollments_all_types": {
       "row_count": 57767,
       "col_count": 13,
-      "status": "OK",
       "field_stats": {
         "provider_type_label": {
           "null_rate": 0.0,
@@ -1242,18 +1190,9 @@
         }
       }
     },
-    {
-      "dataset": "facility_master",
-      "label": "Facility Master \u00e2\u20ac\u201d Spine with Geography",
-      "output_file": "facility_master_national.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:27.893394+00:00",
-      "divergences": [],
+    "facility_master": {
       "row_count": 57767,
       "col_count": 60,
-      "status": "OK",
       "field_stats": {
         "provider_type_label": {
           "null_rate": 0.0,
@@ -1557,40 +1496,9 @@
         }
       }
     },
-    {
-      "dataset": "leie",
-      "label": "OIG LEIE Exclusions (gitignored, individual names)",
-      "output_file": "leie_national.csv",
-      "vintage": "Jul 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": true,
-      "timestamp": "2026-07-22T08:09:29.888206+00:00",
-      "divergences": [],
-      "row_count": null,
-      "col_count": null,
-      "status": "SKIPPED_GITIGNORED",
-      "field_stats": {}
-    },
-    {
-      "dataset": "census_demographics",
-      "label": "Census ACS 5-Year Demographics by ZCTA",
-      "output_file": "census_demographics_national.csv",
-      "vintage": "ACS 2024 5-Year",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:29.888222+00:00",
-      "divergences": [
-        {
-          "check": "null_rate",
-          "severity": "LATENT",
-          "field": "pct_disability",
-          "null_rate": 0.9828,
-          "message": "Field 'pct_disability' is 98.3% null"
-        }
-      ],
+    "census_demographics": {
       "row_count": 33772,
       "col_count": 22,
-      "status": "LATENT",
       "field_stats": {
         "zcta": {
           "null_rate": 0.0,
@@ -1704,18 +1612,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_provider_info",
-      "label": "NH Provider Info (Five-Star + Staffing + SFF)",
-      "output_file": "nh_provider_info_national.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-21",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:30.276097+00:00",
-      "divergences": [],
+    "nh_provider_info": {
       "row_count": 14695,
       "col_count": 51,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -1974,18 +1873,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_health_deficiencies",
-      "label": "NH Health Deficiencies",
-      "output_file": "nh_health_deficiencies_national.parquet",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:30.751650+00:00",
-      "divergences": [],
+    "nh_health_deficiencies": {
       "row_count": 418479,
       "col_count": 25,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2114,18 +2004,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_fire_deficiencies",
-      "label": "NH Fire Safety Deficiencies",
-      "output_file": "nh_fire_deficiencies_national.parquet",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:33.874732+00:00",
-      "divergences": [],
+    "nh_fire_deficiencies": {
       "row_count": 200030,
       "col_count": 25,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2254,18 +2135,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_penalties",
-      "label": "NH Penalties",
-      "output_file": "nh_penalties_national.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:35.308525+00:00",
-      "divergences": [],
+    "nh_penalties": {
       "row_count": 15181,
       "col_count": 13,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2334,18 +2206,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_penalties_by_facility",
-      "label": "NH Penalties \u00e2\u20ac\u201d Facility Aggregates",
-      "output_file": "nh_penalties_by_facility.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:35.429754+00:00",
-      "divergences": [],
+    "nh_penalties_by_facility": {
       "row_count": 6405,
       "col_count": 8,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2389,18 +2252,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_mds_qm",
-      "label": "NH Quality Measures \u00e2\u20ac\u201d MDS-Based",
-      "output_file": "nh_mds_qm_national.parquet",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:35.471595+00:00",
-      "divergences": [],
+    "nh_mds_qm": {
       "row_count": 249815,
       "col_count": 15,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2479,18 +2333,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_claims_qm",
-      "label": "NH Quality Measures \u00e2\u20ac\u201d Claims-Based",
-      "output_file": "nh_claims_qm_national.parquet",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:36.818538+00:00",
-      "divergences": [],
+    "nh_claims_qm": {
       "row_count": 58780,
       "col_count": 13,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2559,18 +2404,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_qrp",
-      "label": "SNF Quality Reporting Program Measures",
-      "output_file": "nh_qrp_national.parquet",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:37.170148+00:00",
-      "divergences": [],
+    "nh_qrp": {
       "row_count": 837615,
       "col_count": 11,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2629,18 +2465,9 @@
         }
       }
     },
-    {
-      "dataset": "snf_vbp",
-      "label": "SNF Value-Based Purchasing",
-      "output_file": "snf_vbp_national.csv",
-      "vintage": "FY2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:39.387096+00:00",
-      "divergences": [],
+    "snf_vbp": {
       "row_count": 13900,
       "col_count": 17,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -2729,18 +2556,9 @@
         }
       }
     },
-    {
-      "dataset": "pac_puf",
-      "label": "Post-Acute Care Public Use File",
-      "output_file": "pac_puf_national.csv",
-      "vintage": "RY2025",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:39.580589+00:00",
-      "divergences": [],
+    "pac_puf": {
       "row_count": 14161,
       "col_count": 71,
-      "status": "OK",
       "field_stats": {
         "YEAR": {
           "null_rate": 0.0,
@@ -3099,18 +2917,9 @@
         }
       }
     },
-    {
-      "dataset": "snf_cost_report",
-      "label": "SNF Cost Report (HCRIS)",
-      "output_file": "snf_cost_report_national.csv",
-      "vintage": "FY2023",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:40.153785+00:00",
-      "divergences": [],
+    "snf_cost_report": {
       "row_count": 14933,
       "col_count": 24,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -3234,18 +3043,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_survey_summary",
-      "label": "NH Survey Summary",
-      "output_file": "nh_survey_summary_national.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:40.417481+00:00",
-      "divergences": [],
+    "nh_survey_summary": {
       "row_count": 42953,
       "col_count": 42,
-      "status": "OK",
       "field_stats": {
         "cms_certification_number_ccn": {
           "null_rate": 0.0,
@@ -3459,18 +3259,9 @@
         }
       }
     },
-    {
-      "dataset": "snf_vbp_detail",
-      "label": "SNF VBP - Facility Performance Detail (Baseline + Performance Period)",
-      "output_file": "output_vbp/national/01_vbp_facility.csv",
-      "vintage": "FY2026",
-      "pull_date": null,
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:41.113784+00:00",
-      "divergences": [],
+    "snf_vbp_detail": {
       "row_count": 13900,
       "col_count": 34,
-      "status": "OK",
       "field_stats": {
         "ccn": {
           "null_rate": 0.0,
@@ -3644,18 +3435,9 @@
         }
       }
     },
-    {
-      "dataset": "nh_state_benchmarks",
-      "label": "NH State Benchmarks",
-      "output_file": "nh_state_benchmarks_national.csv",
-      "vintage": "Jun 2026",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:41.452332+00:00",
-      "divergences": [],
+    "nh_state_benchmarks": {
       "row_count": 54,
       "col_count": 51,
-      "status": "OK",
       "field_stats": {
         "state_or_nation": {
           "null_rate": 0.0,
@@ -3914,18 +3696,9 @@
         }
       }
     },
-    {
-      "dataset": "reference_ftag_citations",
-      "label": "F-Tag / K-Tag / E-Tag Reference Crosswalk",
-      "output_file": "reference_ftag_citations.csv",
-      "vintage": "Static (SOM Appendix PP)",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:41.474854+00:00",
-      "divergences": [],
+    "reference_ftag_citations": {
       "row_count": 643,
       "col_count": 5,
-      "status": "OK",
       "field_stats": {
         "tag_prefix": {
           "null_rate": 0.0,
@@ -3954,26 +3727,9 @@
         }
       }
     },
-    {
-      "dataset": "reference_measure_intervals",
-      "label": "QM Measure Code \u00e2\u20ac\u201d Collection Period Reference",
-      "output_file": "reference_measure_intervals.csv",
-      "vintage": "CMS QM Technical Specs",
-      "pull_date": "2026-07-11",
-      "gitignored": false,
-      "timestamp": "2026-07-22T08:09:41.482355+00:00",
-      "divergences": [
-        {
-          "check": "null_rate",
-          "severity": "LATENT",
-          "field": "measure_date_range",
-          "null_rate": 1.0,
-          "message": "Field 'measure_date_range' is 100.0% null"
-        }
-      ],
+    "reference_measure_intervals": {
       "row_count": 47,
       "col_count": 6,
-      "status": "LATENT",
       "field_stats": {
         "measure_code": {
           "null_rate": 0.0,
@@ -4007,6 +3763,5 @@
         }
       }
     }
-  ],
-  "drift_signals": []
+  }
 }

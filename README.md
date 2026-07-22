@@ -31,7 +31,7 @@ These observations come from CMS nursing home data current as of June 2026. The 
 | SNF Enrollments | 14,425 | 14,425 | Medicare-certified SNF spine; denominator of record |
 | NH Provider Info (Care Compare) | 14,695 | 14,695 | +469 Medicaid-only NFs not in Medicare enrollment; −199 hospital-based swing beds (A-suffix CCNs) in enrollment but absent from Care Compare ratings |
 | SNF Cost Report (HCRIS) | 14,933 rows | 14,120 | Multiple cost periods per facility; 13,644 enrolled facilities have a report; **781 enrolled with no cost report**; 476 CCNs filed but no longer in current enrollment |
-| VBP Scored | 12,901 | 12,901 | Reconciled: 12,628 current enrolled + 273 prior-enrollment (scored on prior-year claims, since left current enrollment) = 12,901. 1,797 current enrolled below case minimum. 12,628 + 1,797 = 14,425 ✓ |
+| VBP Participants | 13,900 | 13,900 | 13,613 currently enrolled + 287 prior-enrollment (scored on prior-year claims, since left current enrollment) = 13,900. 812 current enrolled below case minimum. 13,613 + 812 = 14,425 ✓ |
 | PAC PUF | 14,161 | 14,161 | Facilities with sufficient Medicare PAC admissions to report |
 
 **The accountability finding is not that the counts differ — it is what the gaps mean:**
@@ -44,7 +44,7 @@ Staffing findings use the NH Provider Info universe (14,695). Deficiency and pen
 
 ### Value-Based Purchasing
 
-78.6% of VBP-scored facilities (10,146 of 12,901) receive an incentive payment penalty (IPM < 1.0). 21.4% receive a bonus. None are neutral. 12,901 facilities are VBP-scored — 89.4% of all Medicare SNFs; the remainder fall below CMS's minimum case threshold. Of all SNFs nationally, 70.3% are receiving a VBP penalty. *(Level 1)*
+78.6% of VBP participants (10,920 of 13,900) receive an incentive payment penalty (IPM < 1.0). 21.4% receive a bonus. None are neutral. 13,900 facilities are VBP participants — 13,613 currently enrolled (94.4% of all Medicare SNFs) plus 287 prior-enrollment facilities scored on prior-year claims. 812 currently enrolled SNFs fall below CMS's minimum case threshold and are not VBP-scored. Of all SNFs nationally, 74.3% are receiving a VBP penalty. *(Level 1)*
 
 ### Staffing
 
@@ -190,7 +190,7 @@ All Level 2 scripts pull from the CMS Provider Data DKAN API. Run in any order a
 | `08_nh_survey_summary_national.py` | `nh_survey_summary_national.csv` | 42,953 | Deficiency category totals per survey cycle (42 cols) |
 | `10_nh_state_benchmarks_national.py` | `nh_state_benchmarks_national.csv` | 54 | State and national averages for all Five-Star fields |
 
-Script `09_vbp_performance.py` generates analytical summaries in `output_vbp/national/` and `output_vbp/HI/`. Run after `05_snf_vbp_national.py`.
+Script `09_vbp_performance.py` generates analytical summaries in `output_reference/output_vbp/national/`. Run after `05_snf_vbp_national.py`.
 
 ### Reference Crosswalks
 
@@ -265,9 +265,7 @@ Known patterns — field is expected null, expected constant, or a documented CM
 
 Output: `python/output_reference/divergence_report.json` — machine-readable, committed to repo, regenerated on every run.
 
-**Current status (2026-07-15):** BLOCKING=2, LATENT=2.
-- [BLOCKING] `facility_master.individual_owner_count` — 25% parseable as numeric; blocks identity-gap quantification; investigate before Phase 3 owner analysis
-- [BLOCKING] `facility_master.owner_count` — 25% parseable as numeric; same issue (was accidentally suppressed in prior harness run; now surfaced)
+**Current status (2026-07-21):** BLOCKING=0, LATENT=2.
 - [LATENT] `census_demographics.pct_disability` — 98.3% null; ACS S1811 ZCTA coverage gap
 - [LATENT] `reference_measure_intervals.measure_date_range` — 100% null; computed field not populated
 

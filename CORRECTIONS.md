@@ -7,6 +7,29 @@ what replaced it, why it changed, and the commit where the correction was made.
 
 ## Corrected
 
+**2026-07-21 — VBP figures wrong: pagination bug dropped 999 facilities from script 05**
+- Published (prior to this correction):
+  - "78.6% of VBP-scored facilities (10,146 of 12,901) receive a penalty"
+  - "12,901 facilities are VBP-scored — 89.4% of all Medicare SNFs; 1,797 below case minimum"
+  - "Of all SNFs nationally, 70.3% are receiving a VBP penalty"
+- Corrected:
+  - "78.6% of VBP participants (10,920 of 13,900) receive a penalty" — headline % unchanged
+  - "13,900 VBP participants — 13,613 currently enrolled (94.4% of all Medicare SNFs); 812 below case minimum"
+  - "Of all SNFs nationally, 74.3% are receiving a VBP penalty" — **changed from 70.3%**
+- Cause: script 05's pagination loop included the probe response (offset 0, 1 row) in `all_rows`,
+  then started the main fetch loop at `offset = PAGE_SIZE = 1,000`, silently skipping API rows
+  at indices 1–999. The API stated count was always 13,900; the script produced 12,901.
+  The 999 missing rows were all from alphabetically early states: AK (10), AL (224 of 225),
+  AR (211), AZ (138), CA (416 of 1,084) — the states whose facilities happen to occupy
+  the first 1,000 positions in the API sort order. HI facilities (39) were unaffected.
+  The 78.6% rate was arithmetically stable (10,146/12,901 = 78.65%; 10,920/13,900 = 78.56%,
+  both round to 78.6%). The "of all SNFs" rate shifted by 4 percentage points because 571 of
+  the 999 missed facilities are currently enrolled and receiving penalties.
+- Fix: probe call is now for count/schema only; main data fetch starts at offset 0.
+  EXPECTED_MIN updated from 8,000 to 13,000 to enforce the correct floor going forward.
+  snf_vbp_national.csv regenerated 2026-07-21.
+- See DIVERGENCE_LOG.md: LMDL-001 (resolved internally).
+
 **2026-07-15 — Staffing non-compliance percentage wrong**
 - Published: "75.5% of SNFs — 10,951 of 14,695"
 - Corrected: "74.5% of SNFs — 10,951 of 14,695"
