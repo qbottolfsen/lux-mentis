@@ -15,6 +15,9 @@ python/output_reference/nh_claims_qm_national.csv
 python/output_reference/cache/
 python/logs/
 
+# Old VBP output path — superseded by output_reference/output_vbp/ (2026-07-21)
+python/output_vbp/
+
 # Python
 __pycache__/
 *.pyc

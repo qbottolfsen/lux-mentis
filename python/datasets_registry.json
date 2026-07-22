@@ -689,7 +689,7 @@
     },
     {
       "name": "snf_vbp_detail",
-      "label": "SNF VBP â€" Facility Performance Detail (Baseline + Performance Period)",
+      "label": "SNF VBP - Facility Performance Detail (Baseline + Performance Period)",
       "script": "09_vbp_performance.py",
       "output_file": "output_vbp/national/01_vbp_facility.csv",
       "format": "csv",
@@ -719,6 +719,41 @@
           "field": "fn_snfrm_flag",
           "check": "null_rate",
           "reason": "Footnote flags are only populated when CMS suppresses a measure; majority of facilities have no suppression so field is mostly empty string (not null). Expected sparse distribution."
+        },
+        {
+          "field": "fn_snfrm_flag",
+          "check": "constant_value",
+          "reason": "All FY2026 facilities with a footnote have VOL_SUPPRESSED on SNFRM — CMS suppressed this measure nationally for FY2026 VBP. Single value is expected."
+        },
+        {
+          "field": "fn_hai_flag",
+          "check": "constant_value",
+          "reason": "All FY2026 facilities with a HAI footnote have VOL_SUPPRESSED — CMS suppressed this measure nationally for FY2026 VBP. Single value is expected."
+        },
+        {
+          "field": "fn_turnover_flag",
+          "check": "constant_value",
+          "reason": "All FY2026 facilities with a turnover footnote have VOL_SUPPRESSED — CMS suppressed this measure nationally for FY2026 VBP. Single value is expected."
+        },
+        {
+          "field": "fn_turnover_flag",
+          "check": "type_anomaly",
+          "reason": "Field name contains 'turnover' which triggers numeric-hint heuristic; field is a CMS footnote code string (e.g. VOL_SUPPRESSED), not a number. False positive."
+        },
+        {
+          "field": "fn_staffing_flag",
+          "check": "null_rate",
+          "reason": "Staffing footnote flag is sparsely populated — CMS only sets this when a facility's staffing data is suppressed. Expected sparse distribution."
+        },
+        {
+          "field": "fn_staffing_flag",
+          "check": "constant_value",
+          "reason": "All FY2026 facilities with a staffing footnote have VOL_SUPPRESSED — CMS suppressed this measure for FY2026 VBP. Single value is expected."
+        },
+        {
+          "field": "in_vbp",
+          "check": "constant_value",
+          "reason": "All rows in this output are VBP participants by design — facilities below case minimum are excluded from this dataset. in_vbp=True for all rows is expected."
         }
       ]
     },

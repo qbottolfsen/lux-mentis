@@ -28,16 +28,16 @@ Pre-registered assertions:
   HI rows: [30 -- 55]
 
 Output (per-state run):
-  output_vbp/{STATE}/01_vbp_facility.csv   — per-facility scores, deltas, flags
-  output_vbp/{STATE}/02_vbp_state.csv      — state-level VBP summary
-  output_vbp/{STATE}/03_vbp_measures.csv   — individual measure component scores
-  output_vbp/{STATE}/00_vbp_summary.txt    — narrative
+  output_reference/output_vbp/{STATE}/01_vbp_facility.csv   — per-facility scores, deltas, flags
+  output_reference/output_vbp/{STATE}/02_vbp_state.csv      — state-level VBP summary
+  output_reference/output_vbp/{STATE}/03_vbp_measures.csv   — individual measure component scores
+  output_reference/output_vbp/{STATE}/00_vbp_summary.txt    — narrative
 
 Output (national run, no --state):
-  output_vbp/national/01_vbp_facility.csv  — all states
-  output_vbp/national/02_vbp_state.csv     — state-level summary, all states
-  output_vbp/national/03_vbp_measures.csv
-  output_vbp/national/00_vbp_summary.txt
+  output_reference/output_vbp/national/01_vbp_facility.csv  — all states
+  output_reference/output_vbp/national/02_vbp_state.csv     — state-level summary, all states
+  output_reference/output_vbp/national/03_vbp_measures.csv
+  output_reference/output_vbp/national/00_vbp_summary.txt
 
 Run:
   python 09_vbp_performance.py              # all states
@@ -59,7 +59,7 @@ import pandas as pd
 # ── Paths ────────────────────────────────────────────────────────────────────
 SCRIPT_DIR = Path(__file__).parent
 INPUT_DIR  = SCRIPT_DIR / "input"
-OUT_BASE   = SCRIPT_DIR / "output_vbp"
+OUT_BASE   = SCRIPT_DIR / "output_reference" / "output_vbp"
 VINTAGE    = "FY2026"
 
 # ── CMS Source ───────────────────────────────────────────────────────────────

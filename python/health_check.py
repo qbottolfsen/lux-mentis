@@ -239,9 +239,11 @@ def check_dataset(ds: dict, live: bool) -> dict:
         col_lower = col.lower()
         if has_numeric_hint(col_lower):
             if df[col].dtype == object:
-                numeric_vals = pd.to_numeric(df[col], errors="coerce")
-                pct_parseable = numeric_vals.notna().mean()
                 pct_null = df[col].isna().mean()
+                non_null = df[col].dropna()
+                if len(non_null) == 0:
+                    continue  # all-null column; skip type check
+                pct_parseable = pd.to_numeric(non_null, errors="coerce").notna().mean()
                 if pct_null < 0.95 and pct_parseable < 0.5:
                     tier = classify_divergence(col, name)
                     result["divergences"].append({
