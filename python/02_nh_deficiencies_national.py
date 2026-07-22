@@ -235,7 +235,7 @@ def map_deficiency_cols(raw_cols: list) -> dict:
         "zip":           find_col(raw_cols, "zip", required=False),
         "survey_date":   find_col(raw_cols, "survey_date", required=False) or find_col(raw_cols, "inspection_date"),
         "prefix":        find_col(raw_cols, "deficiency_prefix"),
-        "category":      find_col(raw_cols, "deficiency_category", required=False),
+        "category":      find_col(raw_cols, "deficiency_category"),
         "tag_number":    find_col(raw_cols, "deficiency_tag_number", required=False) or find_col(raw_cols, "tag_number"),
         "tag_desc":      find_col(raw_cols, "deficiency_description", required=False) or find_col(raw_cols, "short_description", required=False),
         "scope_sev":     find_col(raw_cols, "scope_severity"),
@@ -262,6 +262,7 @@ def transform(df_raw: pd.DataFrame, source_label: str) -> pd.DataFrame:
         return str(row.get(col, "")).strip() if col else ""
 
     out = []
+    miss_count = 0
     for _, r in df_raw.iterrows():
         row = r.to_dict()
         prefix    = g(row, "prefix").upper()
@@ -271,6 +272,8 @@ def transform(df_raw: pd.DataFrame, source_label: str) -> pd.DataFrame:
         sev_info  = SCOPE_SEVERITY.get(scope_sev, (None, "", ""))
         sev_level, scope_label, sev_desc = sev_info
 
+        if (prefix, tag_num) not in ftag_lookup:
+            miss_count += 1
         ftag_info = ftag_lookup.get((prefix, tag_num), {
             "ftag_description": g(row, "tag_desc"),
             "ftag_category":    g(row, "category"),
@@ -306,7 +309,16 @@ def transform(df_raw: pd.DataFrame, source_label: str) -> pd.DataFrame:
             "is_quality_care":         str("quality of life" in category.lower()),
         })
 
-    return pd.DataFrame(out)
+    df_out = pd.DataFrame(out)
+    miss_pct = miss_count / len(df_out) * 100 if len(df_out) else 0
+    if miss_count:
+        severity = "WARN" if miss_pct > 5 else "INFO"
+        print(f"  {severity}: {miss_count:,} rows ({miss_pct:.1f}%) had no F/K/E-tag crosswalk match — "
+              f"category used raw API value. "
+              f"{'Re-run reference_ftag_citations.py if this is unexpected.' if miss_pct > 5 else ''}")
+    else:
+        print(f"  PASS: all {len(df_out):,} rows matched F/K/E-tag crosswalk")
+    return df_out
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────

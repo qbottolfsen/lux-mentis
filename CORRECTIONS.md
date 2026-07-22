@@ -37,6 +37,7 @@ what replaced it, why it changed, and the commit where the correction was made.
 - **Third correction (commit b963512 — BLOCKING):** The "Total Nurse HPRD ≥ 2.45" described in the second correction misidentifies both the field and the value. Per CMS-3442-F: 2.45 is the *nurse aide (CNA)* minimum and is applied to `cna_hprd`; the *total nurse* minimum is 3.48, applied to `total_hprd`. The script set `TOTAL_HPRD_MIN = 2.45` and applied it to `total_hprd` (RN+LPN+CNA) — the aide threshold on the wrong field — and never tested `cna_hprd` at all. The formula fit the data perfectly because it was circular: the script computed the flag with its own constants, then cross-validated the flag against those same constants. Under the rule's actual four-part formula (rn ≥ 0.55, weekend_rn ≥ 0.55, aide ≥ 2.45, total ≥ 3.48): **87.6% (12,868 of 14,695) would not have met the final-state thresholds.** 1,917 facilities that cleared the prior formula's wrong test would fail the corrected one.
 - **Documentation check closed the open questions:** (1) HPRD basis: CMS-3442-F rule text says thresholds are "implemented and enforced independent of a facility's case-mix." Script SRC dict comment: "reported = direct PBJ count, not case-mix adjusted." `reported_*` fields are confirmed unadjusted; basis is correct. (2) The "gap" premise was wrong: `meets_3442f_thresholds` is not a CMS-published API field — it is entirely computed by this pipeline. Reading the SRC dict confirms no compliance flag is read from the API. CMS does not publish a staffing compliance determination in the NH Provider Info API; the field did briefly appear on the Care Compare website during Phase 1 enforcement (2024–2025), but never as an API value, and it is no longer displayed post-repeal. "74.5% is a floor relative to CMS's published flag" was a false framing; there is no CMS flag to compare against. The gap between 74.5% and 87.6% is old formula vs. corrected formula. (3) Rule status: Public Law 119-21 (Jul 2025) prohibited enforcement; CMS Federal Register Dec 2025 formally repealed the rule. Our June 2026 data is post-repeal. The 87.6% is a counterfactual — it describes the staffing landscape against thresholds that were repealed before they fully took effect.
 - **Field rename (this commit):** `staffing_compliant` renamed to `meets_3442f_thresholds`; component flags renamed from `*_compliant` to `*_meets_3442f` pattern. The old names asserted regulatory non-compliance with a repealed rule. The new names describe the computation.
+- **Subsequent rename (2026-07-21):** All five computed fields received `lm_` prefix (`lm_meets_3442f_thresholds`, `lm_rn_meets_3442f`, etc.) to distinguish pipeline-computed fields from CMS API source fields. `chain_affiliated` also renamed to `lm_chain_affiliated`.
 - Status: script corrected and field names corrected; 87.6% counterfactual publishes after output CSV is regenerated.
 - Commits: c43b9b9 (first), 7f30b75 (second — incomplete), b963512 (third — formula corrected), 7f25892 (fourth — HPRD basis closed), this commit (fifth — field rename; counterfactual reframe)
 
@@ -87,13 +88,30 @@ what replaced it, why it changed, and the commit where the correction was made.
   and Immediate Jeopardy citations. The 19.0% G+ abuse/neglect finding is CORROBORATED:
   parse table VERIFIED + count is a Level 1 pipeline computation from verified data.
 
-**rn_meets_3442f and total_meets_3442f columns — all null in current CSV; RESOLVED**
-- The NH Provider Info output (prior to regeneration) contains `rn_meets_3442f`, `total_meets_3442f`,
-  and `rn_weekend_meets_3442f` as entirely null. (Formerly named `rn_hprd_compliant` etc. — renamed
-  this session; see staffing correction above.)
+**Category-based deficiency flags (02_nh_deficiencies_national.py) — VERIFIED against D22**
+- Question: do `is_abuse_neglect`, `is_infection_ctrl_cat`, `is_resident_rights`, and `is_quality_care`
+  correctly identify the right F-tags, or does the substring match produce false positives/negatives?
+- Verified: read all 28 distinct category values from reference_ftag_citations.csv (D22).
+  Each substring match resolves to exactly one category — no overlap, no false positives:
+  - `is_abuse_neglect` (`"abuse"` or `"neglect"` in category): captures only
+    "Freedom from Abuse, Neglect, and Exploitation Deficiencies" — 17 F-tags (F-0221 to F-0943)
+  - `is_infection_ctrl_cat` (`"infection control"` in category): captures only
+    "Infection Control Deficiencies" — 10 F-tags (F-0880 to F-0945)
+  - `is_resident_rights` (`"resident rights"` in category): captures only
+    "Resident Rights Deficiencies" — 88 F-tags
+  - `is_quality_care` (`"quality of life"` in category): captures only
+    "Quality of Life and Care Deficiencies" — 57 F-tags
+- Perfect concordance across all 28 categories. Zero false positives, zero false negatives.
+- Note: `is_infection_control` (separate field, line 299) reads directly from the CMS API
+  field `is_ic` (infection control inspection flag) — not a substring match; not covered here.
+- Status: all four category-based flags elevated from INFERRED to VERIFIED.
+
+**lm_rn_meets_3442f and lm_total_meets_3442f columns — all null in current CSV; RESOLVED**
+- The NH Provider Info output (prior to regeneration) contains `lm_rn_meets_3442f`, `lm_total_meets_3442f`,
+  and `lm_rn_weekend_meets_3442f` as entirely null. (Formerly `rn_hprd_compliant` → `rn_meets_3442f`
+  → `lm_rn_meets_3442f` — lm_ prefix applied 2026-07-21 to mark pipeline-computed fields.)
 - Explanation confirmed: these fields did not exist in earlier script versions that produced the
-  current CSV. They are computed fields added during the threshold correction; they will be
-  non-null (True/False) after the output is regenerated.
-- `meets_3442f_thresholds` (the composite) is populated in the current CSV with the old formula's
+  current CSV. They will be non-null (True/False) after the output is regenerated.
+- `lm_meets_3442f_thresholds` (the composite) is populated in the current CSV with the old formula's
   values (10,951 False, 3,744 True) — those values are superseded by the corrected formula.
 - Resolved as a null issue. Values will be correct after CSV regeneration.

@@ -62,10 +62,9 @@ CONST_VALUE_MIN_ROWS  = 100    # only flag constant-value on datasets > 100 rows
 
 # Published findings — maps dataset name to field names that feed a finding
 FINDING_FIELDS = {
-    "nh_provider_info":    ["meets_3442f_thresholds", "rn_hprd", "rn_weekend_hprd", "total_hprd",
+    "nh_provider_info":    ["lm_meets_3442f_thresholds", "rn_hprd", "rn_weekend_hprd", "total_hprd",
                             "total_nurse_turnover", "rn_turnover", "overall_star",
-                            "health_inspection_star", "staffing_star", "special_focus_status",
-                            "special_focus_candidate_status"],
+                            "health_inspection_star", "staffing_star", "special_focus_status"],
     "nh_health_deficiencies": ["scope_severity_code", "tag", "tag_type"],
     "nh_penalties":        ["penalty_type", "fine_amount"],
     "snf_vbp":             ["incentive_payment_multiplier", "performance_score"],
@@ -171,6 +170,19 @@ def check_dataset(ds: dict, live: bool) -> dict:
     result["col_count"] = len(df.columns)
 
     our_cols = set(df.columns)
+
+    # CHECK: ghost suppression entries — known_anomalies for fields not in output
+    for entry in ds.get("known_anomalies", []):
+        if entry.get("field") and entry["field"] not in our_cols:
+            result["divergences"].append({
+                "check": "ghost_suppression",
+                "severity": "INFO",
+                "field": entry["field"],
+                "message": (
+                    f"known_anomaly suppression for '{entry['field']}' ({entry.get('check','?')}) "
+                    f"is vacuous — field not in output. Remove or add the field."
+                ),
+            })
 
     # CHECK 4 — Null-rate anomalies
     for col in df.columns:

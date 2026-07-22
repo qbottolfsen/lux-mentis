@@ -17,8 +17,15 @@ Measures:
 Each measure: Baseline (FY2022) | Performance (FY2024) | Achievement | Improvement | Measure Score
 
 Sources:
-  FY_2026_SNF_VBP_Facility_Performance.csv  — facility-level scores + ranking
-  FY_2026_SNF_VBP_Aggregate_Performance.csv — national benchmark averages
+  Dataset: 284v-j9fz  — CMS Provider Data: FY 2026 SNF VBP Facility-Level Dataset
+  Facility file resolved at runtime from DKAN metastore (URL hash changes each update).
+  Aggregate file (FY_2026_SNF_VBP_Aggregate_Performance.csv) is not indexed in DKAN;
+  place it in input/ to enable national SNFRM benchmarks, or omit (optional enrichment).
+
+Pre-registered assertions:
+  Facility rows: [12,000 -- 15,500]  (12,901 scored + ~1,600 below case minimum expected)
+  State column present: True
+  HI rows: [30 -- 55]
 
 Output (per-state run):
   output_vbp/{STATE}/01_vbp_facility.csv   — per-facility scores, deltas, flags
@@ -38,18 +45,64 @@ Run:
 """
 
 import argparse
+import io
+import json
 import math
+import sys
+import time
+import urllib.request
 from pathlib import Path
 from datetime import date
 
 import pandas as pd
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-BASE_CMS = Path(r"C:\Users\Quint\Desktop\01_RAW_DATA\01_CURRENT\CMS_NURSING_HOME")
-VBP_FAC  = BASE_CMS / "FY_2026_SNF_VBP_Facility_Performance.csv"
-VBP_AGG  = BASE_CMS / "FY_2026_SNF_VBP_Aggregate_Performance.csv"
-OUT_BASE = Path(r"D:\national_ltpac\python\output_vbp")
-VINTAGE  = "FY2026"
+SCRIPT_DIR = Path(__file__).parent
+INPUT_DIR  = SCRIPT_DIR / "input"
+OUT_BASE   = SCRIPT_DIR / "output_vbp"
+VINTAGE    = "FY2026"
+
+# ── CMS Source ───────────────────────────────────────────────────────────────
+DATASET_ID   = "284v-j9fz"
+DKAN_META    = f"https://data.cms.gov/provider-data/api/1/metastore/schemas/dataset/items/{DATASET_ID}"
+FAC_FILENAME = "Facility_Performance"
+
+NATIONAL_FAC_MIN = 12_000
+NATIONAL_FAC_MAX = 15_500
+HI_FAC_MIN = 30
+HI_FAC_MAX = 55
+
+
+def _resolve_facility_url() -> str:
+    """Fetch DKAN metastore to get current download URL for facility performance file."""
+    with urllib.request.urlopen(DKAN_META, timeout=30) as r:
+        meta = json.loads(r.read())
+    for dist in meta.get("distribution", []):
+        url = dist.get("downloadURL", "")
+        if FAC_FILENAME in url:
+            return url
+    raise RuntimeError(
+        f"Facility Performance file not found in DKAN metadata for {DATASET_ID}. "
+        f"Check https://data.cms.gov/provider-data/dataset/{DATASET_ID}"
+    )
+
+
+def _download_bytes(url: str, label: str = "", max_retries: int = 3) -> io.BytesIO:
+    """Download URL with retries, return BytesIO buffer."""
+    for attempt in range(max_retries):
+        try:
+            req = urllib.request.Request(url, headers={"Accept": "text/csv,*/*"})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                data = r.read()
+            print(f"  Downloaded {label or url}: {len(data):,} bytes")
+            return io.BytesIO(data)
+        except Exception as exc:
+            if attempt < max_retries - 1:
+                wait = 10 * (2 ** attempt)
+                print(f"  HTTP error ({exc}); retry in {wait}s ...")
+                time.sleep(wait)
+            else:
+                raise
 
 # ── Column map: verbose CMS names → short keys ───────────────────────────────
 COL_MAP = {
@@ -108,13 +161,17 @@ NUMERIC_COLS = [
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def read_csv_safe(path, **kwargs):
+def read_csv_safe(src, **kwargs):
+    """Accept a file path or io.BytesIO; try multiple encodings."""
     for enc in ("cp1252", "utf-8", "latin-1"):
         try:
-            return pd.read_csv(path, dtype=str, keep_default_na=False, encoding=enc, **kwargs)
+            if isinstance(src, io.BytesIO):
+                src.seek(0)
+            return pd.read_csv(src, dtype=str, keep_default_na=False, encoding=enc, **kwargs)
         except UnicodeDecodeError:
             continue
-    raise ValueError(f"Cannot decode {path}")
+    name = src.name if hasattr(src, "name") else repr(src)
+    raise ValueError(f"Cannot decode {name}")
 
 
 def assert_count(label, actual, expected, context=""):
@@ -146,9 +203,9 @@ def suppression_reason(footnote_val):
 
 # ── Load ──────────────────────────────────────────────────────────────────────
 
-def load_vbp(state_filter=None):
-    """Load VBP facility file; filter to one state if --state is given."""
-    raw = read_csv_safe(VBP_FAC)
+def load_vbp(src, state_filter=None):
+    """Load VBP facility file from path or BytesIO; filter to one state if --state is given."""
+    raw = read_csv_safe(src)
     print(f"  VBP raw total rows: {len(raw)}")
 
     if "State" not in raw.columns:
@@ -190,11 +247,13 @@ def load_vbp(state_filter=None):
     return df
 
 
-def load_vbp_national_agg():
-    """Return dict of national average rates from aggregate file."""
+def load_vbp_national_agg(src=None):
+    """Return dict of national average rates from aggregate file, or {} if unavailable."""
     nat = {}
+    if src is None:
+        return nat
     try:
-        agg = read_csv_safe(VBP_AGG)
+        agg = read_csv_safe(src)
         for col in agg.columns:
             v = to_float(agg[col].iloc[0]) if len(agg) else None
             if v is None:
@@ -286,13 +345,45 @@ def main():
 
     print(f"=== SNF VBP Performance [{scope}] ===")
 
+    # Download facility file from CMS DKAN (resolves URL from metastore to handle hash changes)
+    print("Resolving VBP facility file from DKAN metastore ...")
+    fac_url = _resolve_facility_url()
+    print(f"  URL: {fac_url}")
+    fac_buf = _download_bytes(fac_url, label="VBP facility file")
+
+    # Aggregate file — not indexed in DKAN; use local copy from input/ if present
+    agg_src = None
+    local_agg = INPUT_DIR / "FY_2026_SNF_VBP_Aggregate_Performance.csv"
+    if local_agg.exists():
+        agg_src = local_agg
+        print(f"  Aggregate file: {local_agg}")
+    else:
+        print("  Aggregate file not found in input/ — national SNFRM benchmarks will be omitted.")
+
+    # Row-count assertion on raw download
+    raw_check = read_csv_safe(io.BytesIO(fac_buf.getvalue()))
+    total_raw = len(raw_check)
+    if not (NATIONAL_FAC_MIN <= total_raw <= NATIONAL_FAC_MAX):
+        raise AssertionError(
+            f"FAILED: facility file has {total_raw:,} rows — expected [{NATIONAL_FAC_MIN:,}, {NATIONAL_FAC_MAX:,}]"
+        )
+    print(f"  PASS: {total_raw:,} rows in facility file")
+    hi_raw = (raw_check.get("State", raw_check.get("state", "")) == "HI").sum() if "State" in raw_check.columns or "state" in raw_check.columns else 0
+    state_col_raw = "State" if "State" in raw_check.columns else ("state" if "state" in raw_check.columns else None)
+    if state_col_raw:
+        hi_n = (raw_check[state_col_raw].str.strip().str.upper() == "HI").sum()
+        if not (HI_FAC_MIN <= hi_n <= HI_FAC_MAX):
+            raise AssertionError(f"FAILED: HI facility rows {hi_n} outside [{HI_FAC_MIN}, {HI_FAC_MAX}]")
+        print(f"  PASS: {hi_n} HI rows")
+    del raw_check
+
     # Always load the full national dataset so national percentile ranks are
     # computed against all facilities, even when outputting a single state.
     print("Loading full VBP dataset (national ranks require all rows) ...")
-    vbp_all = load_vbp(state_filter=None)
+    vbp_all = load_vbp(fac_buf, state_filter=None)
 
     print("Loading VBP national aggregate ...")
-    nat_agg = load_vbp_national_agg()
+    nat_agg = load_vbp_national_agg(agg_src)
     for k, v in nat_agg.items():
         print(f"  {k}: {v:.5f}")
 
@@ -379,7 +470,7 @@ def main():
         f"SNF VBP PERFORMANCE — {VINTAGE}",
         f"Scope: {scope}",
         f"Run date: {date.today().isoformat()}",
-        f"Data: {VBP_FAC.name}",
+        f"Data: CMS dataset {DATASET_ID} ({VINTAGE})",
         "",
         f"UNIVERSE: {n_total} facilities ({n_scored} with VBP score, "
         f"{n_total - n_scored} below case minimum / not scored)",

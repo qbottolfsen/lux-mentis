@@ -1,0 +1,7 @@
+# Lux Mentis pipeline dependencies
+# Python 3.13.7 (version confirmed 2026-07-18 against live environment)
+# Pin minimum versions; do not run below these — pandas 2.x has breaking API changes from 1.x
+
+pandas>=2.3.1
+numpy>=2.3.2
+pyarrow>=25.0.0
