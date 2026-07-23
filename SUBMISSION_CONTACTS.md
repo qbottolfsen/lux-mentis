@@ -14,6 +14,7 @@ EXTERNAL-UNDOCUMENTED divergence entry. Do not submit without human review gate.
 
 ### CMS Feedback Form — Provider Data
 - **Channel:** Web form
+- **Last verified:** 2026-07-21  **Verify before use:** Yes — CMS has restructured QualityNet login paths
 - **URL:** https://www.cms.gov/Medicare/Quality-Initiatives-Patient-Assessment-Instruments/NursingHomeQualityInits/Downloads/NH-Data-Submission-Form.pdf (paper form); online variant at https://qualitynet.cms.gov (requires QualityNet account for providers; public feedback path unclear)
 - **What it accepts:** Data quality issues with CMS quality measure data, Care Compare display errors
 - **Format:** Structured fields — Facility CCN, measure name, reported value, expected value, date observed
@@ -23,6 +24,7 @@ EXTERNAL-UNDOCUMENTED divergence entry. Do not submit without human review gate.
 
 ### CMS Data Contact — healthdata.gov / Open Data
 - **Channel:** Email
+- **Last verified:** 2026-07-21  **Verify before use:** Yes — confirm data@cms.hhs.gov still routes to data quality team
 - **URL:** https://healthdata.gov/contact
 - **Email:** data@cms.hhs.gov (general); cdo@hhs.gov (HHS Chief Data Officer — explicitly solicits data quality findings from data consumers per HHS Open Data Policy)
 - **What it accepts:** Schema changes without documentation, field depopulation without notice (cf. used_in_five_star), irreconcilable dataset counts across delivery channels
@@ -32,6 +34,7 @@ EXTERNAL-UNDOCUMENTED divergence entry. Do not submit without human review gate.
 
 ### CMS SNF VBP Technical Assistance
 - **Channel:** Email + web
+- **Last verified:** 2026-07-21 (URL); email confirmed in CMS VBP FAQ as of 2024 — **verify before use**
 - **URL:** https://www.cms.gov/Medicare/Quality-Initiatives-Patient-Assessment-Instruments/Value-Based-Programs/SNF-VBP/SNF-VBP-Educational-Technical-Assistance
 - **Email:** SNFVBPtechnicalassistance@cms.hhs.gov (from CMS VBP FAQ, last confirmed 2024; verify before use)
 - **What it accepts:** Questions about VBP scoring, participant universe, case minimum thresholds
@@ -45,6 +48,7 @@ EXTERNAL-UNDOCUMENTED divergence entry. Do not submit without human review gate.
 
 ### OIG Fraud, Waste and Abuse Hotline
 - **Channel:** Web form + phone
+- **Last verified:** 2026-07-21  **Verify before use:** Yes — OIG redesigns report-fraud pages periodically
 - **URL:** https://oig.hhs.gov/fraud/report-fraud/
 - **What it accepts:** Active fraud, excluded individuals practicing — NOT data quality issues
 - **Format:** Structured form (name, address, incident description)
@@ -53,6 +57,7 @@ EXTERNAL-UNDOCUMENTED divergence entry. Do not submit without human review gate.
 
 ### OIG Data Quality — LEIE file issues
 - **Channel:** Email
+- **Last verified:** 2026-07-21  **Verify before use:** Yes — confirm exclusions@oig.hhs.gov still routes to LEIE team
 - **Email:** exclusions@oig.hhs.gov
 - **What it accepts:** Questions about LEIE file format, field definitions, apparent data errors
 - **Format:** Free-form email
@@ -64,6 +69,7 @@ EXTERNAL-UNDOCUMENTED divergence entry. Do not submit without human review gate.
 
 ### HHS Chief Data Officer (CDO)
 - **Channel:** Email
+- **Last verified:** 2026-07-21  **Verify before use:** Yes — HHS leadership changes can affect CDO routing
 - **Email:** cdo@hhs.gov
 - **URL:** https://www.hhs.gov/about/agencies/asa/ocio/data-governance/index.html
 - **What it accepts:** Per HHS Open Data Policy: data quality issues, schema documentation gaps, field definition discrepancies. Explicitly intended for data consumers reporting pipeline issues.
@@ -73,6 +79,7 @@ EXTERNAL-UNDOCUMENTED divergence entry. Do not submit without human review gate.
 
 ### healthdata.gov Issue Tracker
 - **Channel:** GitHub Issues (public)
+- **Last verified:** 2026-07-21  **Verify before use:** Yes — HHS GitHub org structure shifts; confirm repo path
 - **URL:** https://github.com/HHS/healthdata.gov (repo may vary; check current HHS GitHub org)
 - **What it accepts:** Dataset-specific issues, documentation gaps, API schema discrepancies
 - **Format:** GitHub issue — title, description, steps to reproduce

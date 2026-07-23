@@ -31,7 +31,7 @@ These observations come from CMS nursing home data current as of June 2026. The 
 | SNF Enrollments | 14,425 | 14,425 | Medicare-certified SNF spine; denominator of record |
 | NH Provider Info (Care Compare) | 14,695 | 14,695 | +469 Medicaid-only NFs not in Medicare enrollment; −199 hospital-based swing beds (A-suffix CCNs) in enrollment but absent from Care Compare ratings |
 | SNF Cost Report (HCRIS) | 14,933 rows | 14,120 | Multiple cost periods per facility; 13,644 enrolled facilities have a report; **781 enrolled with no cost report**; 476 CCNs filed but no longer in current enrollment |
-| VBP Participants | 13,900 | 13,900 | 13,613 currently enrolled + 287 prior-enrollment (scored on prior-year claims, since left current enrollment) = 13,900. 812 current enrolled below case minimum. 13,613 + 812 = 14,425 ✓ |
+| VBP Participants | 13,900 | 13,900 | 13,613 currently enrolled SNFs matched to VBP dataset. 812 enrolled SNFs below CMS case minimum (not VBP-scored). 13,613 + 812 = 14,425 ✓. Note: VBP file has 13,900 entries; 287 CCNs appear in VBP file but not in current enrollment spine (data observation; mechanism not documented — see Known Limitations). |
 | PAC PUF | 14,161 | 14,161 | Facilities with sufficient Medicare PAC admissions to report |
 
 **The accountability finding is not that the counts differ — it is what the gaps mean:**
@@ -44,7 +44,7 @@ Staffing findings use the NH Provider Info universe (14,695). Deficiency and pen
 
 ### Value-Based Purchasing
 
-78.6% of VBP participants (10,920 of 13,900) receive an incentive payment penalty (IPM < 1.0). 21.4% receive a bonus. None are neutral. 13,900 facilities are VBP participants — 13,613 currently enrolled (94.4% of all Medicare SNFs) plus 287 prior-enrollment facilities scored on prior-year claims. 812 currently enrolled SNFs fall below CMS's minimum case threshold and are not VBP-scored. Of all SNFs nationally, 74.3% are receiving a VBP penalty. *(Level 1)*
+78.6% of VBP entries (10,920 of 13,900) receive an incentive payment penalty (IPM < 1.0). 21.4% receive a bonus. None are neutral. The FY2026 VBP dataset contains 13,900 entries — 13,613 match current Medicare enrollment (94.4% of all Medicare SNFs). 812 currently enrolled SNFs fall below CMS's minimum case threshold and are not VBP-scored (13,613 + 812 = 14,425 ✓). Of all Medicare-certified SNFs nationally, 75.7% are receiving a VBP penalty (10,920 of 14,425 enrolled). *(Level 1)*
 
 ### Staffing
 
@@ -65,7 +65,7 @@ National average RN HPRD is 0.68. National nurse turnover is 46.1%. Geographic c
 - **Abuse, neglect, or exploitation:** 31,362 citations at any severity level across 9,714 facilities; of those, 4,360 reached actual harm or above (G+) affecting 2,746 facilities (19.0% of all SNFs)
 - **Infection control:** 31,757 citations
 
-44.4% of all SNFs (6,405 facilities) have at least one fine on record in CMS penalty data as of June 2026; total on record: $436 million.
+45.5% of all Medicare-certified SNFs (6,563 of 14,425) have at least one fine on record in CMS penalty data as of June 2026; total on record: $459 million.
 
 Top deficiency categories nationally: Quality of Life and Care (107,576), Resident Rights (64,317), Resident Assessment and Care Planning (60,991). *(Level 1)*
 
@@ -179,16 +179,18 @@ All Level 2 scripts pull from the CMS Provider Data DKAN API. Run in any order a
 | `01_nh_provider_info_national.py` | `nh_provider_info_national.csv` | 14,695 | Five-Star ratings, staffing HPRD, turnover, SFF flags |
 | `02_nh_deficiencies_national.py` | `nh_health_deficiencies_national.parquet` | 418,479 | Citation-level health deficiencies with F-tag + scope/severity |
 | | `nh_fire_deficiencies_national.parquet` | 200,030 | Citation-level fire safety deficiencies |
-| `03_nh_penalties_national.py` | `nh_penalties_national.csv` | 15,181 | Individual penalty events (fines + payment denials) |
-| | `nh_penalties_by_facility.csv` | 6,405 | Per-CCN penalty aggregates |
+| `03_nh_penalties_national.py` | `nh_penalties_national.csv` | 16,180 | Individual penalty events (fines + payment denials) |
+| | `nh_penalties_by_facility.csv` | 6,831 | Per-CCN penalty aggregates (6,563 of these have at least one fine) |
 | `04_nh_quality_measures_national.py` | `nh_mds_qm_national.parquet` | 249,815 | MDS-based quality measures (17 per facility) |
 | | `nh_claims_qm_national.parquet` | 58,780 | Claims-based QMs (4 risk-adjusted measures) |
 | | `nh_qrp_national.parquet` | 837,615 | SNF Quality Reporting Program measures (57 per facility) |
-| `05_snf_vbp_national.py` | `snf_vbp_national.csv` | 12,901 | VBP performance scores + IPM multiplier |
+| `05_snf_vbp_national.py` | `snf_vbp_national.csv` | 13,900 | VBP performance scores + IPM multiplier |
 | `06_pac_puf_national.py` | `pac_puf_national.csv` | 14,161 | PAC utilization, therapy intensity, diagnosis mix (71 cols) |
 | `07_snf_cost_report_national.py` | `snf_cost_report_national.csv` | 14,933 | HCRIS: payer mix, operating margin, occupancy (24 cols) |
-| `08_nh_survey_summary_national.py` | `nh_survey_summary_national.csv` | 42,953 | Deficiency category totals per survey cycle (42 cols) |
+| `08_nh_survey_summary_national.py` | `nh_survey_summary_national.csv` | 43,952 | Deficiency category totals per survey cycle (42 cols) |
+| `09_vbp_performance.py` | `output_vbp/national/` | — | VBP analytical summaries (run after script 05) |
 | `10_nh_state_benchmarks_national.py` | `nh_state_benchmarks_national.csv` | 54 | State and national averages for all Five-Star fields |
+| `11_nh_star_band_national.py` | `nh_star_band_national.csv` | 5 | Five-Star band averages: citations, RN HPRD, turnover (one row per star tier) |
 
 Script `09_vbp_performance.py` generates analytical summaries in `output_reference/output_vbp/national/`. Run after `05_snf_vbp_national.py`.
 
@@ -214,6 +216,8 @@ No dependencies. Run at any time.
 |---------|--------|
 | `python/output_reference/leie_national.csv` | Individual names, DOBs, exclusion history (role-gated) |
 | `python/output_reference/snf_owners_national.csv` | Individual owner names (role-gated) |
+| `python/output_reference/divergence_report.json` | Regenerated on every harness run; each clone establishes its own |
+| `python/output_reference/health_snapshot.json` | Drift baseline; each clone establishes its own on first harness run |
 | `*.env`, `.env` | API keys |
 | `__pycache__/`, `*.pyc` | Build artifacts |
 
@@ -437,6 +441,8 @@ $env:PYTHONIOENCODING="utf-8"; python python\01_nh_provider_info_national.py
 **BCDA (bulk claims) requires institutional access.** The CMS Beneficiary Claims Data API is not available to individual researchers. Blue Button 2.0 is beneficiary-consent only. Claims-based quality measures from the existing CMS QM pull are the available proxy for outcomes.
 
 **Cost report margins unreliable for CCRCs and hospital-based SNFs.** HCRIS `net patient revenue` does not capture entrance fee revenue for continuing care retirement communities or cost-allocated revenue for hospital-based SNFs. Operating margin for these facility types should not be compared to standard SNF margins.
+
+**VBP enrollment gap (287 CCNs).** The FY2026 VBP file contains 13,900 entries; 13,613 match current Medicare enrollment. The 287-record gap is a data observation (CCNs in `snf_vbp_national.csv` but absent from `snf_enrollments_national.csv`). The likely mechanism is that these facilities were active during the FY2024 VBP performance period (Oct 2023 – Sep 2024) but have since closed or terminated Medicare enrollment; however, no CMS VBP Technical Specifications document confirming this has been consulted. The figure is not used in any percentage computation. Pending a read of the FY2026 SNF VBP Technical Specifications Guide.
 
 **VBP NULL sentinel.** CMS uses `---` (three dashes) to indicate facilities that did not meet minimum case thresholds for VBP scoring. This is parsed to NaN in the pipeline output and is not a data error. Affects approximately 3% of facilities nationally.
 
