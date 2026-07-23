@@ -771,7 +771,8 @@
       "gitignored": false,
       "fields_computed": [],
       "known_findings": [],
-      "schema_note": "National aggregate row uses NATION not US as state identifier"
+      "schema_note": "National aggregate row uses NATION not US as state identifier",
+      "assertion_note": "TOTAL_ROWS_MIN=50 against confirmed 54 rows (92.6%) is a deliberate exception to the 95% rule. The dataset is exactly 50 states + DC + territories + US aggregate; CMS can add or remove territories. An integer floor of 50 is appropriate; tightening to 52 would false-positive on a legitimate territory removal."
     },
     {
       "name": "reference_ftag_citations",
@@ -790,6 +791,30 @@
       ],
       "known_findings": [],
       "note": "Built from SOM Appendix PP. Verify against SOM before extending severity stratification."
+    },
+    {
+      "name": "nh_star_band",
+      "label": "NH Five-Star Band Aggregation",
+      "script": "11_nh_star_band_national.py",
+      "output_file": "nh_star_band_national.csv",
+      "format": "csv",
+      "access_method": "computed",
+      "uuid": null,
+      "dist_id": null,
+      "vintage": "Jun 2026",
+      "pull_date": "2026-07-22",
+      "gitignored": false,
+      "fields_computed": [
+        "avg_total_citations",
+        "avg_rn_hprd",
+        "avg_total_turnover_pct"
+      ],
+      "known_findings": [
+        "star_band_citations_hprd_turnover"
+      ],
+      "note": "Computed from nh_health_deficiencies_national.csv (all-cycle citation count per CCN) joined with nh_provider_info_national.csv. avg_total_citations covers ALL survey cycles; health_defic_cycle1 in provider_info is most-recent-cycle only (~3x lower). All five published table values confirmed 2026-07-22.",
+      "live_api_check_note": "access_method=computed; no live API to compare column schema against. CHECK 1+2 (field-set comparison) does not run for this dataset. Structurally expected — this is a pipeline-derived output, not a CMS API pull.",
+      "known_anomalies": []
     },
     {
       "name": "reference_measure_intervals",

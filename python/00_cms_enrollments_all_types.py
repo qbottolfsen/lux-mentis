@@ -43,8 +43,8 @@ DATASETS = [
     ("3b7e7659-067e-41ea-8e36-f9ee2036e1f6", "RHC",      2_500,  18_000),  # site-level
 ]
 
-TOTAL_MIN = 50_000
-TOTAL_MAX = 130_000
+TOTAL_MIN = 54_900  # 95% of 57,767 confirmed 2026-07-22
+TOTAL_MAX = 61_000
 
 # Normalized output column names
 OUT_COLS = [
@@ -131,8 +131,8 @@ with open(SNF_EXISTING, encoding="utf-8") as f:
 snf_rows = normalize(snf_rows_raw, "SNF")
 combined.extend(snf_rows)
 print(f"  SNF: {len(snf_rows):,} rows loaded from file")
-if not (12_000 <= len(snf_rows) <= 18_000):
-    raise AssertionError(f"SNF row count {len(snf_rows):,} outside [12,000, 18,000]")
+if not (13_700 <= len(snf_rows) <= 16_000):  # 95% of 14,425 confirmed 2026-07-22
+    raise AssertionError(f"SNF row count {len(snf_rows):,} outside [13,700, 16,000]")
 print()
 
 # --- Pull each API dataset ---

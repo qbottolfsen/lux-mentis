@@ -24,7 +24,7 @@ Severity tiers (from OIG exclusions background):
 import urllib.request, csv, io, pathlib, time
 
 LEIE_URL = "https://oig.hhs.gov/exclusions/downloadables/UPDATED.csv"
-EXPECTED_MIN = 70_000
+EXPECTED_MIN = 79_500   # 95% of 83,665 confirmed 2026-07-22; LEIE grows as exclusions added
 EXPECTED_MAX = 130_000
 
 OUTPUT_DIR = pathlib.Path(__file__).parent / "output_reference"

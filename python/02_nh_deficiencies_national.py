@@ -353,9 +353,9 @@ f_total = len(df_fire)
 f_hi    = len(df_fire[df_fire["state"] == "HI"])
 h_ij_hi = len(df_health[(df_health["state"] == "HI") & (df_health["is_immediate_jeopardy"] == "True")])
 
-assert_range("Health deficiencies total",  h_total, 350_000, 800_000)
+assert_range("Health deficiencies total",  h_total, 397_500, 440_000)  # 95%/105% of 418,479 confirmed 2026-07-22
 assert_range("Health deficiencies HI",     h_hi,    1_300,   1_700)
-assert_range("Fire deficiencies total",    f_total, 100_000, 300_000)
+assert_range("Fire deficiencies total",    f_total, 190_000, 210_000)  # 95%/105% of 200,030 confirmed 2026-07-22
 assert_range("Fire deficiencies HI",       f_hi,    170,     240)
 assert_range("HI immediate jeopardy (H)",  h_ij_hi, 0,       50)
 

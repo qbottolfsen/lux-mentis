@@ -54,7 +54,7 @@ DIST_ID  = "cf1f058c-65d6-5496-9770-a244cfab2a13"
 BASE_URL = f"https://data.cms.gov/provider-data/api/1/datastore/query/{DIST_ID}"
 PAGE_SIZE = 1_000
 
-EXPECTED_MIN = 13_000
+EXPECTED_MIN = 13_200   # 95% of 13,900 confirmed 2026-07-22
 EXPECTED_MAX = 15_000
 HI_MIN = 35
 HI_MAX = 42

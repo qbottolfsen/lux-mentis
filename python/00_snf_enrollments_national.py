@@ -28,8 +28,8 @@ from pathlib import Path
 BASE_URL = "https://data.cms.gov/data-api/v1/dataset/5f2c306f-3b1c-42cd-b037-187b2ce22126/data"
 PAGE_SIZE = 5000
 
-EXPECTED_MIN = 12_000
-EXPECTED_MAX = 18_000
+EXPECTED_MIN = 13_700   # 95% of 14,425 confirmed 2026-07-22
+EXPECTED_MAX = 16_000
 
 OUT_DIR = Path(__file__).parent / "output_reference"
 OUT_FILE = OUT_DIR / "snf_enrollments_national.csv"

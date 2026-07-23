@@ -39,7 +39,7 @@ import urllib.request
 BASE_URL = "https://data.cms.gov/data-api/v1/dataset/afe44b85-cc6d-40d7-b5df-00ae8910d1d2/data"
 PAGE_SIZE = 5000
 
-EXPECTED_MIN = 200_000
+EXPECTED_MIN = 266_000  # 95% of 280,207 confirmed 2026-07-22; ownership records change with transactions
 EXPECTED_MAX = 350_000
 
 OUT_DIR = Path(__file__).parent / "output_reference"

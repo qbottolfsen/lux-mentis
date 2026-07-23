@@ -43,8 +43,8 @@ DIST_ID  = "3d67f2c4-d8d2-515a-9522-535fba9d9fd6"
 BASE_URL = f"https://data.cms.gov/provider-data/api/1/datastore/query/{DIST_ID}"
 PAGE_SIZE = 1_000
 
-EXPECTED_EVENTS_MIN = 5_000
-EXPECTED_EVENTS_MAX = 300_000
+EXPECTED_EVENTS_MIN = 15_371  # 95% of 16,180 confirmed 2026-07-22
+EXPECTED_EVENTS_MAX = 17_500
 HI_MIN = 15
 HI_MAX = 50
 
@@ -114,11 +114,13 @@ for k, v in COL.items():
 print()
 
 # Fetch all pages
+# NOTE: probe is for count/schema only; data fetch starts at offset=0
+# Prior pattern included probe row in all_rows then started loop at offset=PAGE_SIZE,
+# silently skipping indices 1 through PAGE_SIZE-1.
 print("Fetching ...")
-all_rows = list(probe.get("results", []))
-offset = PAGE_SIZE
-page = 1
-print(f"  Page  1: offset=0  got={len(all_rows)}")
+all_rows = []
+offset = 0
+page = 0
 
 while True:
     page += 1

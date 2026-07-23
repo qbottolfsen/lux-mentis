@@ -36,7 +36,7 @@ BASE_URL = (
     "/086e48c4-87a6-4be1-8823-29e8da8f225b/data"
 )
 PAGE_SIZE = 5_000
-EXPECTED_MIN = 40_000
+EXPECTED_MIN = 73_400   # 95% of 77,283 confirmed 2026-07-22; covers all active provider types
 EXPECTED_MAX = 150_000
 HI_MIN = 100
 HI_MAX = 500

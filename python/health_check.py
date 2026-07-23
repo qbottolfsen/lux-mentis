@@ -397,7 +397,7 @@ def compare_to_snapshot(name: str, result: dict, prior: dict) -> list:
                 "check": "row_drift",
                 "severity": "DRIFT",
                 "message": (
-                    f"Row count {direction}: {prior_rows:,} → {curr_rows:,} "
+                    f"Row count {direction}: {prior_rows:,} -> {curr_rows:,} "
                     f"({pct_change*100:.1f}% change). Verify source vintage."
                 ),
             })
@@ -410,14 +410,14 @@ def compare_to_snapshot(name: str, result: dict, prior: dict) -> list:
             "check": "new_field",
             "severity": "DRIFT",
             "field": f,
-            "message": f"New field '{f}' appeared — not in prior snapshot. CMS schema addition?",
+            "message": f"New field '{f}' appeared - not in prior snapshot. CMS schema addition?",
         })
     for f in (prior_fields - curr_fields):
         drift.append({
             "check": "dropped_field",
             "severity": "DRIFT",
             "field": f,
-            "message": f"Field '{f}' missing — was in prior snapshot. CMS schema drop or rename?",
+            "message": f"Field '{f}' missing - was in prior snapshot. CMS schema drop or rename?",
         })
 
     # Semantic drift: field that was populated is now mostly null
@@ -433,7 +433,7 @@ def compare_to_snapshot(name: str, result: dict, prior: dict) -> list:
                 "severity": "DRIFT",
                 "field": f,
                 "message": (
-                    f"Field '{f}' null rate spiked: {p_null*100:.1f}% → {c_null*100:.1f}%. "
+                    f"Field '{f}' null rate spiked: {p_null*100:.1f}% -> {c_null*100:.1f}%. "
                     f"CMS may have stopped populating this field (cf. used_in_five_star pattern). "
                     f"Log in DIVERGENCE_LOG.md."
                 ),
@@ -475,7 +475,7 @@ def cross_source_checks(results_by_name: dict) -> list:
                 "severity": "DRIFT",
                 "message": (
                     f"Cross-source mismatch: {ds_a} ({rows_a:,} rows) vs "
-                    f"{ds_b} ({rows_b:,} rows) — {pct*100:.2f}% apart. "
+                    f"{ds_b} ({rows_b:,} rows) - {pct*100:.2f}% apart. "
                     f"These datasets must share a spine. Investigate before re-pull."
                 ),
             })
@@ -593,7 +593,7 @@ def main():
 
     if all_drift:
         print(f"{'='*70}")
-        print(f"  DRIFT SIGNALS — review before logging as divergence or suppressing")
+        print(f"  DRIFT SIGNALS - review before logging as divergence or suppressing")
         print(f"  Detection is automated; classification (INTERNAL/EXTERNAL-DOC/EXTERNAL-UNDOC) is yours.")
         print(f"{'='*70}\n")
         for ds_name, d in all_drift:

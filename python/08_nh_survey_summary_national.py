@@ -51,8 +51,8 @@ DIST_ID  = "23d16001-bbf2-58b9-909c-ec21dc8c8877"
 BASE_URL = f"https://data.cms.gov/provider-data/api/1/datastore/query/{DIST_ID}"
 PAGE_SIZE = 1_000
 
-NATIONAL_MIN = 30_000
-NATIONAL_MAX = 70_000
+NATIONAL_MIN = 41_754  # 95% of 43,952 confirmed 2026-07-22
+NATIONAL_MAX = 46_000
 HI_ROWS_MIN = 100
 HI_ROWS_MAX = 150
 HI_CCN_MIN  = 40
@@ -127,9 +127,10 @@ COL = {
     "cat_admin":    find_col(raw_cols, "administration"),
     "cat_infection":find_col(raw_cols, "infection_control", required=False) or find_col(raw_cols, "infection"),
     "cat_emergency":find_col(raw_cols, "emergency_preparedness", required=False) or find_col(raw_cols, "emergency"),
-    "cat_fire_total":find_col(raw_cols, "fire_safety_total", required=False) or find_col(raw_cols, "fire"),
-    "total_health": find_col(raw_cols, "total_health", required=False) or find_col(raw_cols, "health_total"),
-    "total_fire":   find_col(raw_cols, "total_fire", required=False) or find_col(raw_cols, "fire_total"),
+    # CMS renamed these columns; search for new name first, then legacy names
+    "cat_fire_total":find_col(raw_cols, "total_number_of_fire", required=False) or find_col(raw_cols, "fire_safety_total", required=False),
+    "total_health": find_col(raw_cols, "total_number_of_health", required=False) or find_col(raw_cols, "total_health", required=False),
+    "total_fire":   find_col(raw_cols, "total_number_of_fire", required=False) or find_col(raw_cols, "total_fire", required=False),
 }
 
 print("Column mapping:")
@@ -138,11 +139,13 @@ for k, v in COL.items():
 print()
 
 # Fetch all pages
+# NOTE: probe is for count/schema only; data fetch starts at offset=0
+# Prior pattern included probe row in all_rows then started loop at offset=PAGE_SIZE,
+# silently skipping indices 1 through PAGE_SIZE-1.
 print("Fetching all survey summary rows ...")
-all_rows = list(probe.get("results", []))
-offset = PAGE_SIZE
-page = 1
-print(f"  Page  1: {len(all_rows)}")
+all_rows = []
+offset = 0
+page = 0
 
 while True:
     page += 1

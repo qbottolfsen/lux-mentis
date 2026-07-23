@@ -45,10 +45,10 @@ OUTPUT_FILE = OUTPUT_DIR / "facility_master_national.csv"
 
 NPI_URI_BASE = "https://npiregistry.cms.hhs.gov/provider-view/"
 
-TOTAL_MIN     = 50_000
-TOTAL_MAX     = 65_000
-SNF_MIN       = 12_000
-SNF_MAX       = 18_000
+TOTAL_MIN     = 54_900  # 95% of 57,767 confirmed 2026-07-22
+TOTAL_MAX     = 61_000
+SNF_MIN       = 13_700  # 95% of 14,425 confirmed 2026-07-22
+SNF_MAX       = 16_000
 HI_MIN        = 150
 HI_MAX        = 300
 POS_RATE_MIN  = 0.50

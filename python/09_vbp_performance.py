@@ -67,7 +67,7 @@ DATASET_ID   = "284v-j9fz"
 DKAN_META    = f"https://data.cms.gov/provider-data/api/1/metastore/schemas/dataset/items/{DATASET_ID}"
 FAC_FILENAME = "Facility_Performance"
 
-NATIONAL_FAC_MIN = 12_000
+NATIONAL_FAC_MIN = 13_200  # 95% of 13,900 confirmed 2026-07-22
 NATIONAL_FAC_MAX = 15_500
 HI_FAC_MIN = 30
 HI_FAC_MAX = 55

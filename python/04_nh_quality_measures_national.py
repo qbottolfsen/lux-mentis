@@ -60,9 +60,10 @@ CACHE_DAYS   = 8
 FORCE_REFRESH = "--refresh" in sys.argv
 
 ASSERT = {
-    "mds_qm":    (150_000, 400_000, 650,  800),
-    "claims_qm": (30_000,  100_000, 150,  200),
-    "qrp":       (200_000, 900_000, 2000, 2600),
+    # (nat_lo, nat_hi, hi_lo, hi_hi) — nat bounds at 95%/106% of confirmed 2026-07-22
+    "mds_qm":    (237_300, 265_000, 650,  800),   # confirmed 249,815
+    "claims_qm": (55_800,  62_000,  150,  200),   # confirmed 58,780
+    "qrp":       (795_700, 880_000, 2000, 2600),  # confirmed 837,615
 }
 
 

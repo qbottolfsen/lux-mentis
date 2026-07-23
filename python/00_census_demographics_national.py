@@ -37,8 +37,8 @@ ACS_YEAR = "2024"
 BASE_URL = f"https://api.census.gov/data/{ACS_YEAR}/acs/acs5"
 BASE_URL_S = f"https://api.census.gov/data/{ACS_YEAR}/acs/acs5/subject"  # S-table endpoint
 
-EXPECTED_MIN = 32_000
-EXPECTED_MAX = 34_500
+EXPECTED_MIN = 32_100   # 95% of 33,772 confirmed 2026-07-22
+EXPECTED_MAX = 35_500
 
 OUT_DIR = Path(__file__).parent / "output_reference"
 OUT_FILE = OUT_DIR / "census_demographics_national.csv"

@@ -270,10 +270,73 @@ re-running the lost one-off computation.
 
 **Agency/agencies involved:** INTERNAL
 
-**Status:** OPEN — needs a committed script to close.
+**Status:** RESOLVED-INTERNAL (2026-07-22)
 
-**Resolution candidate:** Add star-band aggregation to script 10 or a new script 11. The
-computation is: `nh_provider_info_national.csv.groupby("overall_star")[["health_inspection_star",
-"rn_hprd", "total_nurse_turnover"]].mean()`. One paragraph of code; closes the tracking gap.
+**Resolution:** `11_nh_star_band_national.py` created. Computation confirmed: citations require
+joining `nh_health_deficiencies_national.csv` (all survey cycles) by CCN; `health_defic_cycle1`
+in provider_info is most-recent-cycle only (~3× lower than all-cycle total). Script 11 produces
+`nh_star_band_national.csv` (5 rows). All five published table values reproduced exactly to 1
+decimal. Registered in `datasets_registry.json`; harness checks it on every run. See LMDL-001
+class pattern note: this entry is an artifact of a one-off computation that was never captured
+in a script; closed by script 11 committed 2026-07-22.
+
+---
+
+### LMDL-007
+
+**Date observed:** 2026-07-22
+**Date resolved:** 2026-07-22 (scripts 01/03/08); no published figures wrong from script 01 (file was pre-fix correct)
+**Title:** Pagination bug — same probe-in-rows / offset=PAGE_SIZE pattern as LMDL-001, affecting scripts 01, 03, and 08
+
+**What it was:** During the EXPECTED_MIN survey directed by the PM (Phase 2 closure directive),
+a scan of all paginated scripts for the bug pattern identified in LMDL-001 found three additional
+scripts with the same defect: `01_nh_provider_info_national.py`, `03_nh_penalties_national.py`,
+and `08_nh_survey_summary_national.py`.
+
+**The error as it appeared:**
+| Script | API count | Local file (pre-fix) | Gap |
+|--------|-----------|---------------------|-----|
+| 01_nh_provider_info | 14,695 | 14,695 | 0 (latent — file from pre-bug version) |
+| 03_nh_penalties | 16,180 | 15,181 | −999 |
+| 08_nh_survey_summary | 43,952 | 42,953 | −999 |
+
+Script 01: file was generated before the probe pattern was introduced; matched API count.
+If re-run with buggy script, would produce 13,696 rows. Silent regression risk, not current error.
+Scripts 03 and 08: files were short by exactly 999 rows each — same skip pattern as LMDL-001.
+
+**Impact trace:**
+- Script 01: no current published figure wrong; latent re-run risk only. EXPECTED_MIN was 12,000
+  against a true count of 14,695 — would not have caught a 999-row regression.
+- Script 03: three published README figures wrong:
+  - "6,405 facilities" → corrected 6,563 (the 999 missing events came from ~426 facilities
+    whose only penalty records were in the skipped range)
+  - "44.4% of all SNFs" → corrected 45.5% (6,563/14,425)
+  - "$436 million" → corrected $459 million
+  EXPECTED_EVENTS_MIN was 5,000 against a true count of 16,180 — could not catch a 999-row loss.
+- Script 08: no currently published README figure traced to survey summary output.
+  NATIONAL_MIN was 30,000 against a true count of 43,952 — would not have caught the loss.
+- Script 08 also revealed a CMS column schema change: `total_health` → `total_number_of_health_deficiencies`,
+  `total_fire` → `total_number_of_fire_safety_deficiencies`. Fixed in find_col() fallback chains.
+  Separate entry candidate for LMDL-008 if schema documentation is needed.
+
+**Classification:** INTERNAL — same root cause as LMDL-001.
+
+**Root cause (VERIFIED):** Identical probe-in-rows pattern:
+```python
+all_rows = list(probe.get("results", []))  # includes offset-0 row
+offset = PAGE_SIZE                          # skips indices 1 through PAGE_SIZE-1
+```
+
+**Interim handling:** Scripts 01/03/08 fixed (probe for count/schema only; data fetch at offset=0).
+EXPECTED_MIN tightened to within 5% of confirmed counts. Scripts 03 and 08 regenerated;
+script 01 file not regenerated (already correct).
+
+**Agency/agencies involved:** N/A (internal bug)
+
+**Status:** RESOLVED-INTERNAL
+
+**Resolution:** All three scripts patched. Output files regenerated where needed.
+CORRECTIONS.md updated with corrected figures. README updated. EXPECTED_MIN tightened
+on all three. See CORRECTIONS.md entry 2026-07-22.
 
 ---

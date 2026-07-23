@@ -56,8 +56,8 @@ UUID     = "a69d3df7-3f66-4a0d-b5b8-0d66049bd565"
 BASE_URL = f"https://data.cms.gov/data-api/v1/dataset/{UUID}/data"
 PAGE_SIZE = 500
 
-NATIONAL_MIN = 10_000
-NATIONAL_MAX = 100_000
+NATIONAL_MIN = 14_186  # 95% of 14,933 confirmed 2026-07-22
+NATIONAL_MAX = 16_500
 HI_MIN = 30
 HI_MAX = 80
 
