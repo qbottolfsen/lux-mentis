@@ -1,8 +1,8 @@
 # Phase 2 Exit Declaration
 
 **Date declared:** 2026-07-23
-**Declared against:** commit TBD (see §6 — all items below must be committed before declaration is final)
-**Status:** IN PROGRESS — 4 of 6 criteria pass as of this draft; see criterion status per item
+**Declared against:** commit `96e0e19` (second commit of this round; first was `1847f99`)
+**Status:** CLOSED — all 6 criteria pass against committed state
 
 ---
 
@@ -46,15 +46,15 @@ Per §2.1 of the operating standard: a phase is closed only when every criterion
 
 **Assertion:** Each README table can be reproduced by running the identified script. No table depends on an ad-hoc computation outside a committed script.
 
-| Table | Script | Post-commit status |
-|-------|--------|-------------------|
-| Universe comparison table | scripts 00, 05, 07 | Pending commit |
-| Deficiency severity breakdown | 02_nh_deficiencies_national.py | Pending commit |
-| Star-band table (5 tiers) | 11_nh_star_band_national.py | Pending commit |
-| Financial summary | 07_snf_cost_report_national.py | Pending commit |
-| State rankings | 10_nh_state_benchmarks_national.py | Pending commit |
+| Table | Script | Status |
+|-------|--------|--------|
+| Universe comparison table | scripts 00, 05, 07 | COMMITTED `96e0e19` |
+| Deficiency severity breakdown | 02_nh_deficiencies_national.py | COMMITTED `1847f99` |
+| Star-band table (5 tiers) | 11_nh_star_band_national.py | COMMITTED `1847f99` |
+| Financial summary | 07_snf_cost_report_national.py | COMMITTED `1847f99` |
+| State rankings | 10_nh_state_benchmarks_national.py | COMMITTED `1847f99` |
 
-**Result: PENDING — criterion holds once this round's commit is applied**
+**Result: PASS — all scripts committed; verified against `96e0e19`**
 
 ---
 
@@ -109,7 +109,7 @@ B2 monitoring functions observed executing: row-count drift detection ✓, cross
 
 Note: `divergence_report.json` and `health_snapshot.json` are now gitignored (2026-07-23). Each clone establishes its own drift baseline on first run. The encoding bug (3 `→` and 1 `—` in drift signal message strings) was fixed; harness runs end-to-end without error.
 
-**Result: PASS** (pending commit for gitignore to take effect)
+**Result: PASS** — gitignore committed as of `96e0e19`; divergence_report.json and health_snapshot.json now untracked.
 
 ---
 
@@ -167,15 +167,13 @@ Script created `output_reference/` directory, pulled 54 rows from live CMS API, 
 | # | Criterion | Status |
 |---|-----------|--------|
 | 1 | No published figure below CORROBORATED | PASS |
-| 2 | Every published table reproducible from committed script | PENDING COMMIT |
+| 2 | Every published table reproducible from committed script | PASS |
 | 3 | Every EXPECTED_MIN within ~5% of confirmed count | PASS |
 | 4 | Conformance harness runs clean, observed running | PASS (pending commit for gitignore) |
 | 5 | Divergence log current | PASS |
 | 6 | Fresh-clone test run and result recorded | PASS |
 
-**5 of 6 criteria pass outright. Criterion 2 holds once this round's commit is applied.**
-
-Phase 2 will be declared closed with the commit hash once the commit completes.
+**6 of 6 criteria pass. Phase 2 is CLOSED against commit `96e0e19`.**
 
 ---
 
@@ -221,7 +219,7 @@ All changes from this round will be committed as a single batch:
 
 ## Phase 2 Closure
 
-**DECLARED CLOSED upon commit.** Commit hash: TBD — to be inserted here once `git commit` completes.
+**CLOSED.** Commits: `1847f99` (scripts, outputs, harness, registry, CORRECTIONS.md, DIVERGENCE_LOG.md) + `96e0e19` (README, .gitignore, SUBMISSION_CONTACTS.md, PHASE_2_EXIT.md). All 6 exit criteria pass against committed state.
 
 Phase 3 waits for a separate PM directive.
 
